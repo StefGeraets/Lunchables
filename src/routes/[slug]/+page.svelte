@@ -20,7 +20,18 @@
 			</hgroup>
 
 			<!-- Post -->
-			<div class="prose prose-2xl prose-invert max-w-none">
+			<div class="prose prose-sm prose-invert max-w-none">
+				<svelte:component this={data.content} />
+			</div>
+		</section>
+	{:else if data.meta.type === 'split'}
+		<section class="flex flex-col w-5/6 h-full pt-10 pb-4 mx-auto overflow-hidden">
+			<hgroup class="flex items-center w-full mb-8">
+				<h1 class="w-full italic font-black text-center text-yellow-400 text-5xl">
+					{data.meta.title}
+				</h1>
+			</hgroup>
+			<div class="flex-1 overflow-hidden">
 				<svelte:component this={data.content} />
 			</div>
 		</section>
