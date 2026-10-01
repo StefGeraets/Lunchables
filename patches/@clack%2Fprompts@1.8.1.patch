@@ -1,0 +1,376 @@
+diff --git a/dist/index.mjs b/dist/index.mjs
+index 5464a7e44846278ebcc0520efa8c0fe4c3cb6e08..80e42d81fbe716abf4cd93252703499bfd49bf8d 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -28,13 +28,13 @@ const unicode = isUnicodeSupported(), isCI = () => process.env.CI === "true", is
+   switch (o) {
+     case "initial":
+     case "active":
+-      return styleText("cyan", S_STEP_ACTIVE);
++      return styleText("yellow", S_STEP_ACTIVE);
+     case "cancel":
+       return styleText("red", S_STEP_CANCEL);
+     case "error":
+-      return styleText("yellow", S_STEP_ERROR);
++      return styleText("red", S_STEP_ERROR);
+     case "submit":
+-      return styleText("green", S_STEP_SUBMIT);
++      return styleText("yellow", S_STEP_SUBMIT);
+     case "validating":
+       return styleText("dim", S_STEP_ACTIVE);
+   }
+@@ -42,18 +42,18 @@ const unicode = isUnicodeSupported(), isCI = () => process.env.CI === "true", is
+   switch (o) {
+     case "initial":
+     case "active":
+-      return styleText("cyan", S_BAR);
++      return styleText("yellow", S_BAR);
+     case "cancel":
+       return styleText("red", S_BAR);
+     case "error":
+-      return styleText("yellow", S_BAR);
++      return styleText("red", S_BAR);
+     case "submit":
+-      return styleText("green", S_BAR);
++      return styleText("yellow", S_BAR);
+   }
+ };
+ function formatInstructionFooter(o, e) {
+-  const r = [`${e ? `${styleText("cyan", S_BAR)}  ` : ""}${o.join(" \u2022 ")}`];
+-  return e && r.push(styleText("cyan", S_BAR_END)), r;
++  const r = [`${e ? `${styleText("yellow", S_BAR)}  ` : ""}${o.join(" \u2022 ")}`];
++  return e && r.push(styleText("yellow", S_BAR_END)), r;
+ }
+ 
+ const I = (l, e, w, p, b, C = false) => {
+@@ -154,7 +154,7 @@ const autocomplete = (t) => new AutocompletePrompt({
+       const a = E(l), u = l.hint && l.value === this.focusedValue ? styleText("dim", ` (${l.hint})`) : "";
+       switch (s) {
+         case "active":
+-          return `${styleText("green", S_RADIO_ACTIVE)} ${a}${u}`;
++          return `${styleText("yellow", S_RADIO_ACTIVE)} ${a}${u}`;
+         case "inactive":
+           return `${styleText("dim", S_RADIO_INACTIVE)} ${styleText("dim", a)}`;
+         case "disabled":
+@@ -185,7 +185,7 @@ ${s}${l}`;
+         const V = this.filteredOptions.length !== o.length ? styleText(
+           "dim",
+           ` (${this.filteredOptions.length} match${this.filteredOptions.length === 1 ? "" : "es"})`
+-        ) : "", b = this.filteredOptions.length === 0 && r ? [`${s}${styleText("yellow", "No matches found")}`] : [], y = this.state === "error" ? [`${s}${styleText("yellow", this.error)}`] : [];
++        ) : "", b = this.filteredOptions.length === 0 && r ? [`${s}${styleText("red", "No matches found")}`] : [], y = this.state === "error" ? [`${s}${styleText("red", this.error)}`] : [];
+         n && i.push(`${s.trimEnd()}`), i.push(
+           `${s}${styleText("dim", "Search:")}${u}${V}`,
+           ...b,
+@@ -220,7 +220,7 @@ ${s}${l}`;
+   }
+ }).prompt(), autocompleteMultiselect = (t) => {
+   const c = (i, r, o, m) => {
+-    const p = o.includes(i.value), $ = i.label ?? String(i.value ?? ""), l = i.hint && m !== void 0 && i.value === m ? styleText("dim", ` (${i.hint})`) : "", s = p ? styleText("green", S_CHECKBOX_SELECTED) : styleText("dim", S_CHECKBOX_INACTIVE);
++    const p = o.includes(i.value), $ = i.label ?? String(i.value ?? ""), l = i.hint && m !== void 0 && i.value === m ? styleText("dim", ` (${i.hint})`) : "", s = p ? styleText("yellow", S_CHECKBOX_SELECTED) : styleText("dim", S_CHECKBOX_INACTIVE);
+     return i.disabled ? `${styleText("gray", S_CHECKBOX_INACTIVE)} ${styleText(["strikethrough", "gray"], $)}` : r ? `${s} ${$}${l}` : `${s} ${styleText("dim", $)}`;
+   }, n = new AutocompletePrompt({
+     options: t.options,
+@@ -259,7 +259,7 @@ ${s}${l}`;
+             `${styleText("dim", this.isNavigating ? "Space/Tab:" : "Tab:")} select`,
+             `${styleText("dim", "Enter:")} confirm`,
+             `${styleText("dim", "Type:")} to search`
+-          ], y = this.filteredOptions.length === 0 && o ? [`${u}${styleText("yellow", "No matches found")}`] : [], S = this.state === "error" ? [`${u}${styleText("yellow", this.error)}`] : [], g = [
++          ], y = this.filteredOptions.length === 0 && o ? [`${u}${styleText("red", "No matches found")}`] : [], S = this.state === "error" ? [`${u}${styleText("red", this.error)}`] : [], g = [
+             ...`${r}${i ? styleText(a, S_BAR) : ""}`.split(`
+ `),
+             `${u}${styleText("dim", "Search:")} ${$}${s}`,
+@@ -372,10 +372,10 @@ const confirm = (e) => {
+ ${styleText("gray", S_BAR)}` : ""}`;
+         }
+         default: {
+-          const r = i ? `${styleText("cyan", S_BAR)}  ` : "", g = i ? styleText("cyan", S_BAR_END) : "";
+-          return `${s}${r}${this.value ? `${styleText("green", S_RADIO_ACTIVE)} ${a}` : `${styleText("dim", S_RADIO_INACTIVE)} ${styleText("dim", a)}`}${e.vertical ? i ? `
+-${styleText("cyan", S_BAR)}  ` : `
+-` : ` ${styleText("dim", "/")} `}${this.value ? `${styleText("dim", S_RADIO_INACTIVE)} ${styleText("dim", o)}` : `${styleText("green", S_RADIO_ACTIVE)} ${o}`}
++          const r = i ? `${styleText("yellow", S_BAR)}  ` : "", g = i ? styleText("yellow", S_BAR_END) : "";
++          return `${s}${r}${this.value ? `${styleText("yellow", S_RADIO_ACTIVE)} ${a}` : `${styleText("dim", S_RADIO_INACTIVE)} ${styleText("dim", a)}`}${e.vertical ? i ? `
++${styleText("yellow", S_BAR)}  ` : `
++` : ` ${styleText("dim", "/")} `}${this.value ? `${styleText("dim", S_RADIO_INACTIVE)} ${styleText("dim", o)}` : `${styleText("yellow", S_RADIO_ACTIVE)} ${o}`}
+ ${g}
+ `;
+         }
+@@ -404,7 +404,7 @@ const date = (e) => {
+ `, l = this.state !== "initial" ? this.state : "active", d = b(this, l), c = this.value instanceof Date ? this.formattedValue : "";
+       switch (this.state) {
+         case "error": {
+-          const a = this.error ? `  ${styleText("yellow", this.error)}` : "", s = t ? `${styleText("yellow", S_BAR)}  ` : "", f = t ? styleText("yellow", S_BAR_END) : "";
++          const a = this.error ? `  ${styleText("red", this.error)}` : "", s = t ? `${styleText("red", S_BAR)}  ` : "", f = t ? styleText("red", S_BAR_END) : "";
+           return `${i.trim()}
+ ${s}${d}
+ ${f}${a}
+@@ -420,8 +420,8 @@ ${f}${a}
+ ${s}` : ""}`;
+         }
+         default: {
+-          const a = t ? `${styleText("cyan", S_BAR)}  ` : "", s = t ? styleText("cyan", S_BAR_END) : "", f = t ? `${styleText("cyan", S_BAR)}  ` : "", g = this.inlineError ? `
+-${f}${styleText("yellow", this.inlineError)}` : "";
++          const a = t ? `${styleText("yellow", S_BAR)}  ` : "", s = t ? styleText("yellow", S_BAR_END) : "", f = t ? `${styleText("yellow", S_BAR)}  ` : "", g = this.inlineError ? `
++${f}${styleText("red", this.inlineError)}` : "";
+           return `${i}${a}${d}${g}
+ ${s}
+ `;
+@@ -476,7 +476,7 @@ const m = (i, u) => i.split(`
+ const multiselect = (i) => {
+   const u = (t, a) => {
+     const r = t.label ?? String(t.value);
+-    return a === "disabled" ? `${styleText("gray", S_CHECKBOX_INACTIVE)} ${m(r, (o) => styleText(["strikethrough", "gray"], o))}${t.hint ? ` ${styleText("dim", `(${t.hint ?? "disabled"})`)}` : ""}` : a === "active" ? `${styleText("cyan", S_CHECKBOX_ACTIVE)} ${r}${t.hint ? ` ${styleText("dim", `(${t.hint})`)}` : ""}` : a === "selected" ? `${styleText("green", S_CHECKBOX_SELECTED)} ${m(r, (o) => styleText("dim", o))}${t.hint ? ` ${styleText("dim", `(${t.hint})`)}` : ""}` : a === "cancelled" ? `${m(r, (o) => styleText(["strikethrough", "dim"], o))}` : a === "active-selected" ? `${styleText("green", S_CHECKBOX_SELECTED)} ${r}${t.hint ? ` ${styleText("dim", `(${t.hint})`)}` : ""}` : a === "submitted" ? `${m(r, (o) => styleText("dim", o))}` : `${styleText("dim", S_CHECKBOX_INACTIVE)} ${m(r, (o) => styleText("dim", o))}`;
++    return a === "disabled" ? `${styleText("gray", S_CHECKBOX_INACTIVE)} ${m(r, (o) => styleText(["strikethrough", "gray"], o))}${t.hint ? ` ${styleText("dim", `(${t.hint ?? "disabled"})`)}` : ""}` : a === "active" ? `${styleText("yellow", S_CHECKBOX_ACTIVE)} ${r}${t.hint ? ` ${styleText("dim", `(${t.hint})`)}` : ""}` : a === "selected" ? `${styleText("yellow", S_CHECKBOX_SELECTED)} ${m(r, (o) => styleText("dim", o))}${t.hint ? ` ${styleText("dim", `(${t.hint})`)}` : ""}` : a === "cancelled" ? `${m(r, (o) => styleText(["strikethrough", "dim"], o))}` : a === "active-selected" ? `${styleText("yellow", S_CHECKBOX_SELECTED)} ${r}${t.hint ? ` ${styleText("dim", `(${t.hint})`)}` : ""}` : a === "submitted" ? `${m(r, (o) => styleText("dim", o))}` : `${styleText("dim", S_CHECKBOX_INACTIVE)} ${m(r, (o) => styleText("dim", o))}`;
+   }, d = i.required ?? true, x = i.showInstructions ?? true;
+   return new MultiSelectPrompt({
+     options: i.options,
+@@ -536,9 +536,9 @@ ${styleText(
+ ${styleText("gray", S_BAR)}` : ""}`;
+         }
+         case "error": {
+-          const n = t ? `${styleText("yellow", S_BAR)}  ` : "", l = this.error.split(`
++          const n = t ? `${styleText("red", S_BAR)}  ` : "", l = this.error.split(`
+ `).map(
+-            ($, v) => v === 0 ? `${t ? `${styleText("yellow", S_BAR_END)}  ` : ""}${styleText("yellow", $)}` : `   ${$}`
++            ($, v) => v === 0 ? `${t ? `${styleText("red", S_BAR_END)}  ` : ""}${styleText("red", $)}` : `   ${$}`
+           ).join(`
+ `), s = r.split(`
+ `).length, h = l.split(`
+@@ -557,8 +557,8 @@ ${l}
+ `;
+         }
+         default: {
+-          const n = t ? `${styleText("cyan", S_BAR)}  ` : "", l = r.split(`
+-`).length, s = x ? formatInstructionFooter(MULTISELECT_INSTRUCTIONS, t) : t ? [styleText("cyan", S_BAR_END)] : [], h = s.join(`
++          const n = t ? `${styleText("yellow", S_BAR)}  ` : "", l = r.split(`
++`).length, s = x ? formatInstructionFooter(MULTISELECT_INSTRUCTIONS, t) : t ? [styleText("yellow", S_BAR_END)] : [], h = s.join(`
+ `), $ = s.length + 1;
+           return `${r}${n}${limitOptions({
+             output: i.output,
+@@ -590,7 +590,7 @@ const groupMultiselect = (o) => {
+         o.output,
+         `${a}${n.hint ? ` ${styleText("dim", `(${n.hint})`)}` : ""}`,
+         `${i}${styleText("dim", r)} `,
+-        `${i}${styleText("dim", r)}${styleText("cyan", S_CHECKBOX_ACTIVE)} `,
++        `${i}${styleText("dim", r)}${styleText("yellow", S_CHECKBOX_ACTIVE)} `,
+         `${i}${styleText("dim", c)} `
+       );
+     if (l === "group-active")
+@@ -598,7 +598,7 @@ const groupMultiselect = (o) => {
+         o.output,
+         a,
+         `${i}${r} `,
+-        `${i}${r}${styleText("cyan", S_CHECKBOX_ACTIVE)} `,
++        `${i}${r}${styleText("yellow", S_CHECKBOX_ACTIVE)} `,
+         `${i}${c} `,
+         (m) => styleText("dim", m)
+       );
+@@ -607,12 +607,12 @@ const groupMultiselect = (o) => {
+         o.output,
+         a,
+         `${i}${r} `,
+-        `${i}${r}${styleText("green", S_CHECKBOX_SELECTED)} `,
++        `${i}${r}${styleText("yellow", S_CHECKBOX_SELECTED)} `,
+         `${i}${c} `,
+         (m) => styleText("dim", m)
+       );
+     if (l === "selected") {
+-      const m = t || f ? styleText("green", S_CHECKBOX_SELECTED) : "";
++      const m = t || f ? styleText("yellow", S_CHECKBOX_SELECTED) : "";
+       return wrapTextWithPrefix(
+         o.output,
+         `${a}${n.hint ? ` (${n.hint})` : ""}`,
+@@ -629,7 +629,7 @@ const groupMultiselect = (o) => {
+         o.output,
+         `${a}${n.hint ? ` ${styleText("dim", `(${n.hint})`)}` : ""}`,
+         `${i}${styleText("dim", r)} `,
+-        `${i}${styleText("dim", r)}${styleText("green", S_CHECKBOX_SELECTED)} `,
++        `${i}${styleText("dim", r)}${styleText("yellow", S_CHECKBOX_SELECTED)} `,
+         `${i}${styleText("dim", c)} `
+       );
+     if (l === "submitted")
+@@ -685,9 +685,9 @@ ${styleText(
+ ${styleText("gray", S_BAR)}` : ""}` : ""}`;
+         }
+         case "error": {
+-          const t = n ? `${styleText("yellow", S_BAR)}  ` : "", s = this.error.split(`
++          const t = n ? `${styleText("red", S_BAR)}  ` : "", s = this.error.split(`
+ `).map(
+-            (i, h) => h === 0 ? `${n ? `${styleText("yellow", S_BAR_END)}  ` : ""}${styleText("yellow", i)}` : `   ${i}`
++            (i, h) => h === 0 ? `${n ? `${styleText("red", S_BAR_END)}  ` : ""}${styleText("red", i)}` : `   ${i}`
+           ).join(`
+ `), u = l.split(`
+ `).length, r = s.split(`
+@@ -706,8 +706,8 @@ ${s}
+ `;
+         }
+         default: {
+-          const t = n ? `${styleText("cyan", S_BAR)}  ` : "", s = l.split(`
+-`).length, u = S ? formatInstructionFooter(MULTISELECT_INSTRUCTIONS, n) : n ? [styleText("cyan", S_BAR_END)] : [], r = u.join(`
++          const t = n ? `${styleText("yellow", S_BAR)}  ` : "", s = l.split(`
++`).length, u = S ? formatInstructionFooter(MULTISELECT_INSTRUCTIONS, n) : n ? [styleText("yellow", S_BAR_END)] : [], r = u.join(`
+ `), c = u.length + 1, i = limitOptions({
+             output: o.output,
+             options: this.options,
+@@ -754,13 +754,13 @@ const log = {
+     log.message(s, { ...e, symbol: styleText("blue", S_INFO) });
+   },
+   success: (s, e) => {
+-    log.message(s, { ...e, symbol: styleText("green", S_SUCCESS) });
++    log.message(s, { ...e, symbol: styleText("yellow", S_SUCCESS) });
+   },
+   step: (s, e) => {
+-    log.message(s, { ...e, symbol: styleText("green", S_STEP_SUBMIT) });
++    log.message(s, { ...e, symbol: styleText("yellow", S_STEP_SUBMIT) });
+   },
+   warn: (s, e) => {
+-    log.message(s, { ...e, symbol: styleText("yellow", S_WARN) });
++    log.message(s, { ...e, symbol: styleText("red", S_WARN) });
+   },
+   /** alias for `log.warn()`. */
+   warning: (s, e) => {
+@@ -807,9 +807,9 @@ const multiline = (e) => new MultiLinePrompt({
+   ${styleText(this.focused === "submit" ? "cyan" : "dim", "[ submit ]")}` : "";
+     switch (this.state) {
+       case "error": {
+-        const n = `${styleText("yellow", S_BAR)}  `, r = i ? wrapTextWithPrefix(e.output, a, n, void 0) : a, u = styleText("yellow", S_BAR_END);
++        const n = `${styleText("red", S_BAR)}  `, r = i ? wrapTextWithPrefix(e.output, a, n, void 0) : a, u = styleText("red", S_BAR_END);
+         return `${o}${r}
+-${u}  ${styleText("yellow", this.error)}${d}
++${u}  ${styleText("red", this.error)}${d}
+ `;
+       }
+       case "submit": {
+@@ -835,7 +835,7 @@ ${u}  ${styleText("yellow", this.error)}${d}
+         return `${o}${r}`;
+       }
+       default: {
+-        const n = i ? `${styleText("cyan", S_BAR)}  ` : "", r = i ? styleText("cyan", S_BAR_END) : "", u = i ? wrapTextWithPrefix(e.output, a, n) : a;
++        const n = i ? `${styleText("yellow", S_BAR)}  ` : "", r = i ? styleText("yellow", S_BAR_END) : "", u = i ? wrapTextWithPrefix(e.output, a, n) : a;
+         return `${o}${u}
+ ${r}${d}
+ `;
+@@ -866,7 +866,7 @@ const note = (o = "", e = "", s) => {
+ `), T = i ? `${styleText("gray", S_BAR)}
+ ` : "", l$1 = i ? S_CONNECT_LEFT : S_CORNER_BOTTOM_LEFT;
+   a.write(
+-    `${T}${styleText("green", S_STEP_SUBMIT)}  ${styleText("reset", e)} ${styleText(
++    `${T}${styleText("yellow", S_STEP_SUBMIT)}  ${styleText("reset", e)} ${styleText(
+       "gray",
+       S_BAR_H.repeat(Math.max(t - n - 1, 1)) + S_CORNER_TOP_RIGHT
+     )}
+@@ -888,10 +888,10 @@ const password = (e) => new PasswordPrompt({
+ `, m = this.userInputWithCursor, i = this.masked;
+     switch (this.state) {
+       case "error": {
+-        const s = r ? `${styleText("yellow", S_BAR)}  ` : "", n = r ? `${styleText("yellow", S_BAR_END)}  ` : "", d = i ?? "";
++        const s = r ? `${styleText("red", S_BAR)}  ` : "", n = r ? `${styleText("red", S_BAR_END)}  ` : "", d = i ?? "";
+         return e.clearOnError && this.clear(), `${o.trim()}
+ ${s}${d}
+-${n}${styleText("yellow", this.error)}
++${n}${styleText("red", this.error)}
+ `;
+       }
+       case "submit": {
+@@ -904,7 +904,7 @@ ${n}${styleText("yellow", this.error)}
+ ${styleText("gray", S_BAR)}` : ""}`;
+       }
+       default: {
+-        const s = r ? `${styleText("cyan", S_BAR)}  ` : "", n = r ? styleText("cyan", S_BAR_END) : "";
++        const s = r ? `${styleText("yellow", S_BAR)}  ` : "", n = r ? styleText("yellow", S_BAR_END) : "";
+         return `${o}${s}${m}
+ ${n}
+ `;
+@@ -1016,7 +1016,7 @@ const spinner = ({
+   }, a = (e = "", r = 0, t = false) => {
+     if (!d) return;
+     d = false, clearInterval(T), y();
+-    const o = r === 0 ? styleText("green", S_STEP_SUBMIT) : r === 1 ? styleText("red", S_STEP_CANCEL) : styleText("red", S_STEP_ERROR);
++    const o = r === 0 ? styleText("yellow", S_STEP_SUBMIT) : r === 1 ? styleText("red", S_STEP_CANCEL) : styleText("red", S_STEP_ERROR);
+     s = e ?? s, t || (l === "timer" ? n.write(`${o}  ${s} ${_(w)}
+ `) : n.write(`${o}  ${s}
+ `)), H(), M();
+@@ -1058,7 +1058,7 @@ function progress({
+       case "cancel":
+         return (e) => styleText("red", e);
+       case "submit":
+-        return (e) => styleText("green", e);
++        return (e) => styleText("yellow", e);
+       default:
+         return (e) => styleText("magenta", e);
+     }
+@@ -1101,7 +1101,7 @@ const select = (t) => {
+       case "selected":
+         return `${c(s, (i) => styleText("dim", i))}`;
+       case "active":
+-        return `${styleText("green", S_RADIO_ACTIVE)} ${s}${n.hint ? ` ${styleText("dim", `(${n.hint})`)}` : ""}`;
++        return `${styleText("yellow", S_RADIO_ACTIVE)} ${s}${n.hint ? ` ${styleText("dim", `(${n.hint})`)}` : ""}`;
+       case "cancelled":
+         return `${c(s, (i) => styleText(["strikethrough", "dim"], i))}`;
+       default:
+@@ -1142,8 +1142,8 @@ const select = (t) => {
+ ${styleText("gray", S_BAR)}` : ""}`;
+         }
+         default: {
+-          const r = n ? `${styleText("cyan", S_BAR)}  ` : "", a = u.split(`
+-`).length, p = d ? formatInstructionFooter(SELECT_INSTRUCTIONS, n) : n ? [styleText("cyan", S_BAR_END)] : [], f = p.join(`
++          const r = n ? `${styleText("yellow", S_BAR)}  ` : "", a = u.split(`
++`).length, p = d ? formatInstructionFooter(SELECT_INSTRUCTIONS, n) : n ? [styleText("yellow", S_BAR_END)] : [], f = p.join(`
+ `), b = p.length + 1;
+           return `${u}${r}${limitOptions({
+             output: t.output,
+@@ -1200,7 +1200,7 @@ const selectKey = (t) => {
+ ${styleText("gray", S_BAR)}` : ""}`;
+         }
+         default: {
+-          const n = e ? `${styleText("cyan", S_BAR)}  ` : "", r = e ? styleText("cyan", S_BAR_END) : "", l = this.options.map(
++          const n = e ? `${styleText("yellow", S_BAR)}  ` : "", r = e ? styleText("yellow", S_BAR_END) : "", l = this.options.map(
+             (u, d) => wrapTextWithPrefix(
+               t.output,
+               c(u, d === this.cursor ? "active" : "inactive"),
+@@ -1236,9 +1236,9 @@ ${i}${r.trimStart()}`), s = 3 + stripVTControlCharacters(r.trimStart()).length);
+ `);
+   },
+   info: (e) => stream.message(e, { symbol: styleText("blue", S_INFO) }),
+-  success: (e) => stream.message(e, { symbol: styleText("green", S_SUCCESS) }),
+-  step: (e) => stream.message(e, { symbol: styleText("green", S_STEP_SUBMIT) }),
+-  warn: (e) => stream.message(e, { symbol: styleText("yellow", S_WARN) }),
++  success: (e) => stream.message(e, { symbol: styleText("yellow", S_SUCCESS) }),
++  step: (e) => stream.message(e, { symbol: styleText("yellow", S_STEP_SUBMIT) }),
++  warn: (e) => stream.message(e, { symbol: styleText("red", S_WARN) }),
+   /** alias for `log.warn()`. */
+   warning: (e) => stream.warn(e),
+   error: (e) => stream.message(e, { symbol: styleText("red", S_ERROR) })
+@@ -1258,7 +1258,7 @@ const A = (l) => l.replace(/\x1b\[(?:\d+;)*\d*[ABCDEFGHfJKSTsu]|\x1b\[(s|u)/g, "
+ const taskLog = (l) => {
+   const r = l.output ?? process.stdout, O = getColumns(r), i = styleText("gray", S_BAR), p = l.spacing ?? 1, k = 3, m = l.retainLog === true, d = !isCI() && isTTY(r);
+   r.write(`${i}
+-`), r.write(`${styleText("green", S_STEP_SUBMIT)}  ${l.title}
++`), r.write(`${styleText("yellow", S_STEP_SUBMIT)}  ${l.title}
+ `);
+   for (let e = 0; e < p; e++)
+     r.write(`${i}
+@@ -1389,13 +1389,13 @@ const text = (t) => new TextPrompt({
+     ) : styleText(["inverse", "hidden"], "_"), o = this.userInput ? this.userInputWithCursor : d, s = this.value ?? "";
+     switch (this.state) {
+       case "validating": {
+-        const n = r ? `${styleText("cyan", S_BAR)}  ` : "", i = r ? styleText("cyan", S_BAR_END) : "", c = styleText("dim", o), $ = styleText("dim", "Validating...");
++        const n = r ? `${styleText("yellow", S_BAR)}  ` : "", i = r ? styleText("yellow", S_BAR_END) : "", c = styleText("dim", o), $ = styleText("dim", "Validating...");
+         return `${l}${n}${c}
+ ${i}  ${$}
+ `;
+       }
+       case "error": {
+-        const n = this.error ? `  ${styleText("yellow", this.error)}` : "", i = r ? `${styleText("yellow", S_BAR)}  ` : "", c = r ? styleText("yellow", S_BAR_END) : "";
++        const n = this.error ? `  ${styleText("red", this.error)}` : "", i = r ? `${styleText("red", S_BAR)}  ` : "", c = r ? styleText("red", S_BAR_END) : "";
+         return `${l.trim()}
+ ${i}${o}
+ ${c}${n}
+@@ -1411,7 +1411,7 @@ ${c}${n}
+ ${i}` : ""}`;
+       }
+       default: {
+-        const n = r ? `${styleText("cyan", S_BAR)}  ` : "", i = r ? styleText("cyan", S_BAR_END) : "";
++        const n = r ? `${styleText("yellow", S_BAR)}  ` : "", i = r ? styleText("yellow", S_BAR_END) : "";
+         return `${l}${n}${o}
+ ${i}
+ `;

@@ -1,58 +1,48 @@
-import { copyFile, mkdir, readdir, writeFile } from 'node:fs/promises';
+import { readdirSync } from 'node:fs';
+import { copyFile, mkdir, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { extname, join } from 'node:path';
-import { ask, exists, format, isSlug, presentationsDir, slugify } from './cli';
+import { ask, created, exists, format, isSlug, presentationsDir, slugify } from './cli';
 
 const routesDir = 'src/routes';
 const imageExtensions = ['.svg', '.png', '.jpg', '.jpeg', '.webp', '.avif', '.gif'];
 
-const staticRoutes = async () =>
-	(await readdir(routesDir, { withFileTypes: true }))
-		.filter((entry) => entry.isDirectory() && !/^[[(]/.test(entry.name))
-		.map((entry) => entry.name);
+const staticRoutes = readdirSync(routesDir, { withFileTypes: true })
+	.filter((entry) => entry.isDirectory() && !/^[[(]/.test(entry.name))
+	.map((entry) => entry.name);
 
-const folderProblem = async (id: string) => {
-	if (!isSlug(id)) return 'use lowercase letters, numbers and dashes';
-	if ((await staticRoutes()).includes(id)) return `/${id} is already a route in ${routesDir}`;
-	if (await exists(join(presentationsDir, id))) return `${presentationsDir}/${id} already exists`;
+const folderProblem = (id: string) => {
+	if (!isSlug(id)) return 'Use lowercase letters, numbers and dashes';
+	if (staticRoutes.includes(id)) return `/${id} is already a route in ${routesDir}`;
+	if (exists(join(presentationsDir, id))) return `${presentationsDir}/${id} already exists`;
 };
 
-const imageProblem = async (path: string) => {
+/** Accepts typed, pasted or dragged paths: strips quotes and expands ~. */
+const cleanPath = (path: string) =>
+	path.replace(/^(['"])(.*)\1$/, '$2').replace(/^~(?=\/|$)/, homedir());
+
+const imageProblem = (input: string) => {
+	if (!input) return;
+	const path = cleanPath(input);
 	if (!imageExtensions.includes(extname(path).toLowerCase())) {
-		return `use one of ${imageExtensions.join(' ')}`;
+		return `Use one of ${imageExtensions.join(' ')}`;
 	}
-	if (!(await exists(path))) return 'file not found';
+	if (!exists(path)) return 'File not found';
 };
 
 /** Prompts for a new presentation, writes it and returns its folder name. */
 export const newPresentation = async () => {
-	let title = '';
-	while (!title) title = await ask('Presentation title');
-
-	let id = '';
-	while (!id) {
-		const answer = await ask('Folder / URL', slugify(title));
-		const problem = await folderProblem(answer);
-		if (problem) console.log(`  ${problem}`);
-		else id = answer;
-	}
-
+	const title = await ask('Presentation title', {
+		validate: (value) => (value ? undefined : 'A title is required')
+	});
+	const id = await ask('Folder / URL', { fallback: slugify(title), validate: folderProblem });
 	const description = await ask('Description (optional)');
-	const heading = await ask('Cover heading', title);
-
-	let image = '';
-	while (true) {
-		const answer = (await ask('Cover image path (optional, Enter to skip)'))
-			.replace(/^(['"])(.*)\1$/, '$2')
-			.replace(/^~(?=\/|$)/, homedir());
-		if (!answer) break;
-		const problem = await imageProblem(answer);
-		if (!problem) {
-			image = answer;
-			break;
-		}
-		console.log(`  ${problem}`);
-	}
+	const heading = await ask('Cover heading', { fallback: title });
+	const image = cleanPath(
+		await ask('Cover image path (optional, type, paste or drag a file)', {
+			validate: imageProblem
+		})
+	);
 
 	const dir = join(presentationsDir, id);
 	const coverFile = image && `cover${extname(image).toLowerCase()}`;
@@ -91,8 +81,7 @@ order: 1
 		await copyFile(image, written[2]);
 	}
 
-	console.log(`\nCreated:\n${written.map((path) => `  ${path}`).join('\n')}`);
-	console.log(`Open http://localhost:5173/${id} (bun run dev)\n`);
+	created(written, `http://localhost:5173/${id}`);
 
 	return id;
 };

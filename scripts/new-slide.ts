@@ -4,8 +4,10 @@ import type { Slide } from '../src/lib/types';
 import {
 	ask,
 	choose,
+	created,
 	exists,
 	format,
+	info,
 	isSlug,
 	listPresentations,
 	presentationsDir,
@@ -16,6 +18,13 @@ type SlideType = Slide['type'];
 type SlideInfo = { file: string; title: string; type: SlideType; order: number };
 
 const types: SlideType[] = ['content', 'demo', 'ship', 'code'];
+
+const typeHints: Record<SlideType, string> = {
+	content: 'big title with text or bullet points',
+	demo: 'live component in a bordered box, with its code',
+	ship: 'browser support and a ship-it verdict',
+	code: 'title only, the Markdown body is not shown'
+};
 
 const readSlides = async (slidesDir: string): Promise<SlideInfo[]> => {
 	const files = (await readdir(slidesDir)).filter((file) => file.endsWith('.md'));
@@ -41,7 +50,7 @@ const readSlides = async (slidesDir: string): Promise<SlideInfo[]> => {
 	return slides.sort((first, second) => first.order - second.order);
 };
 
-const body = async (type: SlideType, deckDir: string) => {
+const body = (type: SlideType, deckDir: string) => {
 	switch (type) {
 		case 'content':
 			return '- Your first point\n- Your second point\n';
@@ -57,7 +66,7 @@ const body = async (type: SlideType, deckDir: string) => {
 \`\`\`
 `;
 		case 'ship':
-			if (await exists(join(deckDir, 'components', 'ShipScore.svelte'))) {
+			if (exists(join(deckDir, 'components', 'ShipScore.svelte'))) {
 				return `<script>
   import ShipScore from '../components/ShipScore.svelte'
 </script>
@@ -83,33 +92,38 @@ export const newSlide = async (deck?: string) => {
 	const slidesDir = join(deckDir, 'slides');
 	const slides = await readSlides(slidesDir);
 	const last = slides.at(-1);
-	if (last) console.log(`Last slide in ${deck}: ${last.order}. ${last.title} (${last.file})`);
+	if (last) info(`Last slide in ${deck}`, `${last.order} · ${last.title}`, last.file);
 
-	let order = 0;
-	while (!order) {
-		const answer = Number(await ask('Order', String((last?.order ?? 0) + 1)));
-		const taken = slides.find((slide) => slide.order === answer);
-		if (!Number.isInteger(answer) || answer < 1) console.log('  use a whole number above 0');
-		else if (taken) console.log(`  ${answer} is already used by ${taken.file}`);
-		else order = answer;
-	}
+	const nextOrder = String((last?.order ?? 0) + 1);
+	const order = Number(
+		await ask('Order', {
+			fallback: nextOrder,
+			validate: (value) => {
+				const number = Number(value);
+				if (!Number.isInteger(number) || number < 1) return 'Use a whole number above 0';
+				const taken = slides.find((slide) => slide.order === number);
+				if (taken) return `${number} is already used by ${taken.file}`;
+			}
+		})
+	);
 
 	const previous = slides.findLast((slide) => slide.order < order);
-	const type = await choose('Slide type', types, previous?.type ?? 'content');
+	const type = await choose('Slide type', types, previous?.type ?? 'content', typeHints);
 
-	let title = '';
-	while (!title) title = await ask('Title', previous?.title);
+	const title = await ask('Title', {
+		fallback: previous?.title,
+		validate: (value) => (value ? undefined : 'A title is required')
+	});
 
 	const subtitle = type === 'demo' || type === 'ship' ? await ask('Subtitle (optional)') : '';
 
-	let name = '';
-	while (!name) {
-		const answer = await ask('File name', `${order}${slugify(subtitle || title)}`);
-		if (!isSlug(answer)) console.log('  use lowercase letters, numbers and dashes');
-		else if (await exists(join(slidesDir, `${answer}.md`)))
-			console.log(`  ${answer}.md already exists`);
-		else name = answer;
-	}
+	const name = await ask('File name', {
+		fallback: `${order}${slugify(subtitle || title)}`,
+		validate: (value) => {
+			if (!isSlug(value)) return 'Use lowercase letters, numbers and dashes';
+			if (exists(join(slidesDir, `${value}.md`))) return `${value}.md already exists`;
+		}
+	});
 
 	const source = `---
 title: ${JSON.stringify(title)}
@@ -117,13 +131,12 @@ ${subtitle ? `subtitle: ${JSON.stringify(subtitle)}\n` : ''}type: '${type}'
 order: ${order}
 ---
 
-${await body(type, deckDir)}`;
+${body(type, deckDir)}`;
 
 	const path = join(slidesDir, `${name}.md`);
 	await writeFile(path, await format(source, path));
 
-	console.log(`\nCreated ${path}`);
-	console.log(`Open http://localhost:5173/${deck}/${name} (bun run dev)\n`);
+	created([path], `http://localhost:5173/${deck}/${name}`);
 
 	return deck;
 };

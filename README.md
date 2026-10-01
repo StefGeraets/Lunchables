@@ -62,7 +62,7 @@ Run `bun run new deck` and answer the prompts:
 | Cover heading    | the title             |                                                                                                    |
 | Cover image path | none                  | Type, paste or drag a file into the terminal. It is copied to `assets/cover.<ext>`. Enter skips it |
 
-Press Enter to accept a default. Ctrl+C or Ctrl+D stops without writing the deck or slide you were working on.
+Defaults show as grey placeholder text; press Enter to accept one or type over it. Lists use the arrow keys and Enter. If an answer isn't valid, the reason shows under the field and you can fix it in place. Ctrl+C stops without writing the deck or slide you were working on.
 
 The script creates `config.ts`, a first slide at `slides/1intro.md` and, if you gave an image, `assets/cover.<ext>`. Run `bun run dev` and open `/<folder>`.
 
@@ -99,14 +99,14 @@ If the cover has no `image`, the heading links to the first slide instead.
 
 Run `bun run new slide` (or `bun run new slide my-talk` to skip picking the deck). It shows the deck's last slide, then asks:
 
-| Prompt       | Default                                        | Notes                                           |
-| ------------ | ---------------------------------------------- | ----------------------------------------------- |
-| Presentation | the only deck, or a numbered list to pick from | Skipped when you pass the deck name             |
-| Order        | last slide's order + 1                         | Must be a whole number that no other slide uses |
-| Slide type   | the type of the slide before it                | `content`, `demo`, `ship` or `code`             |
-| Title        | the title of the slide before it               | Slides in one section share a title             |
-| Subtitle     | empty                                          | Only asked for `demo` and `ship`                |
-| File name    | order + subtitle (or title) in URL form        | Becomes the slide's URL. Must not exist yet     |
+| Prompt       | Default                                 | Notes                                           |
+| ------------ | --------------------------------------- | ----------------------------------------------- |
+| Presentation | the only deck, or a list to pick from   | Skipped when you pass the deck name             |
+| Order        | last slide's order + 1                  | Must be a whole number that no other slide uses |
+| Slide type   | the type of the slide before it         | `content`, `demo`, `ship` or `code`             |
+| Title        | the title of the slide before it        | Slides in one section share a title             |
+| Subtitle     | empty                                   | Only asked for `demo` and `ship`                |
+| File name    | order + subtitle (or title) in URL form | Becomes the slide's URL. Must not exist yet     |
 
 The new file gets the frontmatter plus a starter body for its type:
 
