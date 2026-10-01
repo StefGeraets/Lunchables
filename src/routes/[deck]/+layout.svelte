@@ -15,6 +15,10 @@
 			: resolve('/[deck]', { deck: data.deck });
 
 	const navigate = async (key: KeyboardEvent) => {
+		// Leave browser shortcuts (Ctrl+R) and typing in demo inputs alone.
+		if (key.ctrlKey || key.metaKey || key.altKey) return;
+		if (key.target instanceof HTMLElement && key.target.closest('input, textarea, select')) return;
+
 		const slug = page.params.slug;
 		const slides = await getSlides(data.deck);
 		const nav = slug ? getSlideNav(slides, slug) : undefined;
@@ -25,7 +29,13 @@
 				goto(slideHref(nav ? nav.next : slides[0].slug));
 				break;
 			case 'ArrowLeft':
-				goto(nav ? slideHref(nav.previous) : resolve('/'));
+				if (nav) goto(slideHref(nav.previous));
+				break;
+			case 'KeyH':
+				goto(resolve('/'));
+				break;
+			case 'KeyR':
+				goto(slideHref());
 				break;
 		}
 	};

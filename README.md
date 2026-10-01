@@ -13,17 +13,18 @@ bun install
 bun run dev        # http://localhost:5173, the overview of all presentations
 ```
 
-| Command                    | What it does                          |
-| -------------------------- | ------------------------------------- |
-| `bun run dev`              | Start the dev server                  |
-| `bun run build`            | Build and prerender every deck        |
-| `bun run preview`          | Serve the production build            |
-| `bun run check`            | Type check with svelte-check          |
-| `bun run lint`             | Prettier and ESLint                   |
-| `bun run format`           | Format everything with Prettier       |
-| `bun run new`              | Create a deck or a slide (asks which) |
-| `bun run new deck`         | Create a new presentation             |
-| `bun run new slide [deck]` | Add a slide to a presentation         |
+| Command                    | What it does                               |
+| -------------------------- | ------------------------------------------ |
+| `bun run dev`              | Start the dev server                       |
+| `bun run build`            | Build and prerender every deck             |
+| `bun run preview`          | Serve the production build                 |
+| `bun run check`            | Type check with svelte-check               |
+| `bun run lint`             | Prettier and ESLint                        |
+| `bun run format`           | Format everything with Prettier            |
+| `bun run new`              | Create a deck, slide or theme (asks which) |
+| `bun run new deck`         | Create a new presentation                  |
+| `bun run new slide [deck]` | Add a slide to a presentation              |
+| `bun run new theme [deck]` | Pick or replace a presentation's theme     |
 
 ## Project layout
 
@@ -32,13 +33,15 @@ src/
   presentations/
     install-nothing/          one folder per deck, the folder name is the URL
       config.ts               title, description, cover
+      theme.ts                colors for this deck (see Themes)
       slides/*.md             the slides
       components/             components only this deck uses (demos, ShipScore)
       assets/                 images only this deck uses
   lib/
-    presentations.ts          finds every deck's config.ts, sorts them newest first
+    presentations.ts          finds every deck's config.ts and theme.ts, sorts them newest first
     slides.remote.ts          getSlides(deck), a prerendered remote function
     slides.ts                 previous/next/counter logic
+    themes.ts                 theme presets and themeStyle()
     types.ts                  Slide and PresentationConfig
     components/SlideFooter.svelte
     components/Cover.svelte   cover markup, used by the cover page and the previews
@@ -65,10 +68,11 @@ Run `bun run new deck` and answer the prompts:
 | Author           | your git user name    | Shown on the home page card only. Leave empty to omit                                              |
 | Cover heading    | the title             |                                                                                                    |
 | Cover image path | none                  | Type, paste or drag a file into the terminal. It is copied to `assets/cover.<ext>`. Enter skips it |
+| Theme            | `midnight`            | A preset, or `custom` for a theme file with every color to edit. See [Themes](#themes)             |
 
 Defaults show as grey placeholder text; press Enter to accept one or type over it. Lists use the arrow keys and Enter. If an answer isn't valid, the reason shows under the field and you can fix it in place. Ctrl+C stops without writing the deck or slide you were working on.
 
-The script creates `config.ts`, a first slide at `slides/1intro.md` and, if you gave an image, `assets/cover.<ext>`. Run `bun run dev` and open `/<folder>`.
+The script creates `config.ts`, `theme.ts`, a first slide at `slides/1intro.md` and, if you gave an image, `assets/cover.<ext>`. Run `bun run dev` and open `/<folder>`.
 
 ### By hand
 
@@ -94,12 +98,53 @@ The script only writes files, so you can also create them yourself:
    } satisfies PresentationConfig;
    ```
 
-3. Add slides to `slides/` (see the next section).
-4. Open `/my-talk`.
+3. Optionally add `theme.ts` (see [Themes](#themes)). Without one the deck uses `midnight`.
+4. Add slides to `slides/` (see the next section).
+5. Open `/my-talk`.
 
 That's it. The registry, the routes, the home page and the build all pick up the new folder on their own. `bun run new deck` sets `date` to today; change it if you want the deck sorted by the day you give the talk.
 
 If the cover has no `image`, the heading links to the first slide instead.
+
+## Themes
+
+Each deck sets its colors in `theme.ts`. `bun run new deck` asks for one, and `bun run new theme [deck]` changes it later (it asks before replacing an existing file).
+
+A preset is one line:
+
+```ts
+import type { Theme } from '$lib/themes';
+
+export default 'ocean' satisfies Theme;
+```
+
+| Preset     | Background | Accent     |
+| ---------- | ---------- | ---------- |
+| `midnight` | gray-950   | yellow-400 |
+| `paper`    | stone-50   | red-600    |
+| `ocean`    | slate-950  | sky-400    |
+
+Pick `custom` to get every color written out, starting from `midnight`:
+
+```ts
+import type { Theme } from '$lib/themes';
+
+export default {
+	surface: 'gray-950', // background
+	ink: 'gray-100', // text
+	accent: 'yellow-400', // titles, card hover, current slide in the picker
+	onAccent: 'gray-950', // text on accent backgrounds
+	highlight: 'teal-300' // wavy underline under _emphasis_
+} satisfies Theme;
+```
+
+Values take a Tailwind color name (`'pink-500'`, `'white'`) or any CSS color (`'#ff3366'`, `'oklch(0.7 0.2 20)'`).
+
+The theme sets CSS variables on the deck's `<main>`, so it only applies inside that deck and to its card preview on the home page. The home page itself always uses `midnight`. Muted text, borders and hover states are `ink` at reduced opacity (`text-ink/60`, `border-ink/15`), which keeps the footer readable on light and dark themes without drawing attention.
+
+In your own components, use the token classes (`bg-surface`, `text-ink`, `text-accent`, `text-on-accent`, `decoration-highlight`) to follow the deck's theme. To add a preset, add it to `themes` in [src/lib/themes.ts](src/lib/themes.ts); the CLI lists it automatically.
+
+Code blocks don't follow the theme. Shiki colors them at build time with `github-dark`.
 
 ## Home page
 
@@ -149,13 +194,13 @@ order: 6
 | Field      | Required | Meaning                                                                                                     |
 | ---------- | -------- | ----------------------------------------------------------------------------------------------------------- |
 | `title`    | yes      | Slide title, also the browser tab title                                                                     |
-| `subtitle` | no       | Big yellow heading on `demo` and `ship` slides, shown in the slide picker                                   |
+| `subtitle` | no       | Big accent-colored heading on `demo` and `ship` slides, shown in the slide picker                           |
 | `type`     | yes      | `content`, `demo`, `ship` or `code` (layouts below)                                                         |
 | `order`    | yes      | Position in the deck. Slides are sorted by this number, not by file name, so give each slide a unique value |
 
 ### Slide types
 
-- **`content`**: large italic yellow title with the Markdown body below it in large prose. Use it for bullet lists and text.
+- **`content`**: large italic title in the accent color with the Markdown body below it in large prose. Use it for bullet lists and text.
 - **`demo`**: small title, big subtitle, and the body inside a bordered, scrollable box. Use it for a live demo with its code.
 - **`ship`**: like `demo` without the border. Meant for the ship score component.
 - **`code`**: shows only `title | code`. The Markdown body is not rendered for this type.
@@ -184,12 +229,12 @@ Only `html`, `css` and `javascript` are loaded. Any other language renders as pl
 
 [src/routes/mdsvex.svelte](src/routes/mdsvex.svelte) replaces some Markdown elements with custom components from `src/lib/components/custom/`, for every deck:
 
-| Markdown       | Renders as                                 |
-| -------------- | ------------------------------------------ |
-| `_text_`       | Non-italic text with a wavy teal underline |
-| `- item` lists | Large text (`text-5xl`) with a 🗴 marker    |
-| `![alt](src)`  | `<img>` with `loading="lazy"`              |
-| Code blocks    | `<pre>` at 95% width                       |
+| Markdown       | Renders as                                                   |
+| -------------- | ------------------------------------------------------------ |
+| `_text_`       | Non-italic text with a wavy underline in the highlight color |
+| `- item` lists | Large text (`text-5xl`) with a 🗴 marker                      |
+| `![alt](src)`  | `<img>` with `loading="lazy"`                                |
+| Code blocks    | `<pre>` at 95% width                                         |
 
 ### Images
 
@@ -222,10 +267,14 @@ Files in `static/` are served from `/` and work with an absolute path (`/favicon
 
 ## Presenting
 
-| Key            | Action                                                                                               |
-| -------------- | ---------------------------------------------------------------------------------------------------- |
-| `→` or `Space` | Next slide. On the cover this opens the first slide, on the last slide it returns to the cover       |
-| `←`            | Previous slide. On the first slide it returns to the cover, on the cover it returns to the home page |
+| Key            | Action                                                                                         |
+| -------------- | ---------------------------------------------------------------------------------------------- |
+| `→` or `Space` | Next slide. On the cover this opens the first slide, on the last slide it returns to the cover |
+| `←`            | Previous slide. On the first slide it returns to the cover, on the cover it does nothing       |
+| `H`            | Home page                                                                                      |
+| `R`            | Back to the cover, to start over                                                               |
+
+The shortcuts ignore keys pressed with Ctrl, Cmd or Alt, so Ctrl+R still reloads the page. They also ignore keys typed into a demo's input fields.
 
 The footer on every slide has a grid icon that opens the home page, Previous, a counter (`6 / 34`) and Next. The cover has the same grid icon in its top-left corner. On the last slide Next becomes a reload icon that links back to the cover. Clicking the counter opens a list of every slide, with the current one highlighted. Pick a slide to jump to it.
 
