@@ -5,3 +5,13 @@ export type Slide = {
 	order: number;
 	slug: string;
 };
+
+export type PresentationConfig = {
+	title: string;
+	description: string;
+	cover: {
+		image?: string;
+		alt?: string;
+		heading: string;
+	};
+};

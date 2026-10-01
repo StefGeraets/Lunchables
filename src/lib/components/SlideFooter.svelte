@@ -3,12 +3,13 @@
 	import { getSlides } from '$lib/slides.remote';
 	import { getSlideNav } from '$lib/slides';
 
-	let { slug }: { slug: string } = $props();
+	let { deck, slug }: { deck: string; slug: string } = $props();
 
-	const slides = await getSlides();
+	const slides = $derived(await getSlides(deck));
 	const nav = $derived(getSlideNav(slides, slug));
 
-	const href = (target?: string) => (target ? resolve('/[slug]', { slug: target }) : resolve('/'));
+	const href = (target?: string) =>
+		target ? resolve('/[deck]/[slug]', { deck, slug: target }) : resolve('/[deck]', { deck });
 
 	let picker: HTMLElement | undefined = $state();
 

@@ -6,6 +6,7 @@
       "dependencies": {
         "@fontsource-variable/jetbrains-mono": "^5.3.0",
         "@fontsource-variable/manrope": "^5.3.0",
+        "valibot": "^1.5.0",
       },
       "devDependencies": {
         "@eslint/js": "^10.0.1",
@@ -521,6 +522,8 @@
     "uri-js": ["uri-js@4.4.1", "https://registry.openticket.tech/uri-js/-/uri-js-4.4.1.tgz", { "dependencies": { "punycode": "^2.1.0" } }, "sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg=="],
 
     "util-deprecate": ["util-deprecate@1.0.2", "https://registry.openticket.tech/util-deprecate/-/util-deprecate-1.0.2.tgz", {}, "sha1-RQ1Nyfpw3nMnYvvS1KKJgUGaDM8="],
+
+    "valibot": ["valibot@1.5.0", "https://registry.openticket.tech/valibot/-/valibot-1.5.0.tgz", { "peerDependencies": { "typescript": ">=5" }, "optionalPeers": ["typescript"] }, "sha512-nil6AkP2TChWL43Z5uJ6GTxX01CUA+g8LWUM+N/rB9NBbkUMaUsi9PUNzlUPgoKASgmx9f7eGOYpJ04/fSa6FQ=="],
 
     "vfile": ["vfile@6.0.3", "https://registry.openticket.tech/vfile/-/vfile-6.0.3.tgz", { "dependencies": { "@types/unist": "^3.0.0", "vfile-message": "^4.0.0" } }, "sha512-KzIbH/9tXat2u30jf+smMwFCsno4wHVdNmzFyL+T/L3UGqqk6JKfVqOFOZEpZSHADH1k40ab6NUIXZq422ov3Q=="],
 
