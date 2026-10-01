@@ -1,8 +1,9 @@
 <script lang="ts">
-	import type { PresentationConfig } from '$lib/types';
+	import type { Presentation } from '$lib/presentations';
+	import { themeStyle } from '$lib/themes';
 	import Cover from './Cover.svelte';
 
-	let { id, presentation }: { id: string; presentation: PresentationConfig } = $props();
+	let { id, presentation }: { id: string; presentation: Presentation } = $props();
 
 	// The cover renders at the window's size and is scaled down to the card width. Matching the
 	// window keeps the preview identical to the real cover, so the view transition zooms cleanly.
@@ -14,7 +15,8 @@
 <svelte:window bind:innerWidth bind:innerHeight />
 
 <div
-	class="relative overflow-hidden bg-gray-950 text-gray-100"
+	class="relative overflow-hidden bg-surface text-ink"
+	style={themeStyle(presentation.theme)}
 	style:aspect-ratio="{innerWidth} / {innerHeight}"
 	bind:clientWidth={width}
 	style:view-transition-name="cover-{id}"

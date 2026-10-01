@@ -5,6 +5,7 @@
 	import SlideFooter from '$lib/components/SlideFooter.svelte';
 	import { getSlides } from '$lib/slides.remote';
 	import { getSlideNav } from '$lib/slides';
+	import { themeStyle } from '$lib/themes';
 
 	let { data, children } = $props();
 
@@ -32,7 +33,10 @@
 
 <svelte:window onkeydown={navigate} />
 
-<main class="flex flex-col w-screen h-screen text-gray-100 bg-gray-950">
+<main
+	class="flex flex-col w-screen h-screen text-ink bg-surface"
+	style={themeStyle(data.presentation.theme)}
+>
 	{@render children()}
 
 	{#if page.params.slug}

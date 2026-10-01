@@ -4,6 +4,6 @@
 	let { children }: { children: Snippet } = $props();
 </script>
 
-<em class="not-italic underline decoration-wavy decoration-teal-300 underline-offset-8"
+<em class="not-italic underline decoration-wavy decoration-highlight underline-offset-8"
 	>{@render children()}</em
 >

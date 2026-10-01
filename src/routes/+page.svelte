@@ -8,10 +8,10 @@
 	<meta name="description" content="Presentations with live browser demos" />
 </svelte:head>
 
-<main class="min-h-screen px-6 py-12 text-gray-100 bg-gray-950 sm:px-12">
+<main class="min-h-screen px-6 py-12 text-ink bg-surface sm:px-12">
 	<header class="mb-12">
-		<h1 class="text-5xl italic font-black tracking-tight text-yellow-400">Lunchables</h1>
-		<p class="mt-2 text-gray-500">Presentations</p>
+		<h1 class="text-5xl italic font-black tracking-tight text-accent">Lunchables</h1>
+		<p class="mt-2 text-ink/60">Presentations</p>
 	</header>
 
 	<div class="grid gap-8 sm:grid-cols-2 xl:grid-cols-3">

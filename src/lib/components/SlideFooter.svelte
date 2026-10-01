@@ -27,18 +27,18 @@
 </script>
 
 {#if nav.current > 0}
-	<footer class="flex justify-between w-full px-6 py-4 text-gray-500">
+	<footer class="flex justify-between w-full px-6 py-4 text-ink/60">
 		<div class="flex items-center gap-4">
 			<HomeLink />
-			<a href={href(nav.previous)} class="hover:text-gray-400">Previous</a>
+			<a href={href(nav.previous)} class="hover:text-ink">Previous</a>
 		</div>
-		<button popovertarget="slide-picker" class="cursor-pointer hover:text-gray-400">
+		<button popovertarget="slide-picker" class="cursor-pointer hover:text-ink">
 			{nav.current} / {nav.total}
 		</button>
 		{#if nav.next}
-			<a href={href(nav.next)} class="hover:text-gray-400">Next</a>
+			<a href={href(nav.next)} class="hover:text-ink">Next</a>
 		{:else}
-			<a href={href()} aria-label="Back to start" class="hover:text-gray-400">
+			<a href={href()} aria-label="Back to start" class="hover:text-ink">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					width="24"
@@ -64,7 +64,7 @@
 		id="slide-picker"
 		bind:this={picker}
 		{ontoggle}
-		class="p-2 text-gray-100 bg-gray-900 border border-gray-800 shadow-2xl rounded-xl max-h-[60vh] overflow-auto"
+		class="p-2 text-ink bg-surface border border-ink/15 shadow-2xl rounded-xl max-h-[60vh] overflow-auto"
 	>
 		<ol>
 			{#each slides as slide, index (slide.slug)}
@@ -72,7 +72,7 @@
 					<a
 						href={href(slide.slug)}
 						aria-current={slide.slug === slug ? 'page' : undefined}
-						class="flex gap-3 px-4 py-2 rounded-lg hover:bg-gray-800 aria-[current=page]:bg-yellow-400 aria-[current=page]:text-gray-950"
+						class="flex gap-3 px-4 py-2 rounded-lg hover:bg-ink/10 aria-[current=page]:bg-accent aria-[current=page]:text-on-accent"
 					>
 						<span class="w-6 font-mono text-right opacity-60">{index + 1}</span>
 						<span>

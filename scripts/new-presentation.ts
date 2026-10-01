@@ -4,6 +4,7 @@ import { copyFile, mkdir, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { extname, join } from 'node:path';
 import { ask, created, exists, format, isSlug, presentationsDir, slugify } from './cli';
+import { chooseTheme, writeTheme } from './new-theme';
 
 const routesDir = 'src/routes';
 const imageExtensions = ['.svg', '.png', '.jpg', '.jpeg', '.webp', '.avif', '.gif'];
@@ -56,6 +57,8 @@ export const newPresentation = async () => {
 		})
 	);
 
+	const theme = await chooseTheme();
+
 	const dir = join(presentationsDir, id);
 	const coverFile = image && `cover${extname(image).toLowerCase()}`;
 
@@ -88,11 +91,12 @@ order: 1
 	const written = [join(dir, 'config.ts'), join(dir, 'slides', '1intro.md')];
 	await writeFile(written[0], await format(config, written[0]));
 	await writeFile(written[1], await format(slide, written[1]));
+	written.push(await writeTheme(dir, theme));
 
 	if (coverFile) {
 		await mkdir(join(dir, 'assets'));
 		written.push(join(dir, 'assets', coverFile));
-		await copyFile(image, written[2]);
+		await copyFile(image, written.at(-1)!);
 	}
 
 	created(written, `http://localhost:5173/${id}`);

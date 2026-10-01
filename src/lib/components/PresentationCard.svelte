@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { getSlides } from '$lib/slides.remote';
-	import type { PresentationConfig } from '$lib/types';
+	import type { Presentation } from '$lib/presentations';
 	import CoverPreview from './CoverPreview.svelte';
 
-	let { id, presentation }: { id: string; presentation: PresentationConfig } = $props();
+	let { id, presentation }: { id: string; presentation: Presentation } = $props();
 
 	const slides = $derived(await getSlides(id));
 
@@ -22,14 +22,14 @@
 
 <a
 	href={resolve('/[deck]', { deck: id })}
-	class="flex flex-col overflow-hidden transition-colors border border-gray-800 rounded-2xl group hover:border-yellow-400 focus-visible:border-yellow-400 focus-visible:outline-none"
+	class="flex flex-col overflow-hidden transition-colors border border-ink/15 rounded-2xl group hover:border-accent focus-visible:border-accent focus-visible:outline-none"
 >
 	<CoverPreview {id} {presentation} />
-	<div class="flex flex-col gap-1 p-5 border-t border-gray-800">
-		<h2 class="text-xl font-bold group-hover:text-yellow-400">{presentation.title}</h2>
+	<div class="flex flex-col gap-1 p-5 border-t border-ink/15">
+		<h2 class="text-xl font-bold group-hover:text-accent">{presentation.title}</h2>
 		{#if presentation.description}
-			<p class="text-gray-400">{presentation.description}</p>
+			<p class="text-ink/70">{presentation.description}</p>
 		{/if}
-		<p class="mt-2 text-sm text-gray-500">{meta}</p>
+		<p class="mt-2 text-sm text-ink/60">{meta}</p>
 	</div>
 </a>

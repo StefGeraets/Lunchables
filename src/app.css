@@ -1,9 +1,33 @@
-@import 'tailwindcss';
+@import 'tailwindcss' theme(static);
 @plugin '@tailwindcss/typography';
 
 @theme {
 	--font-sans: 'Manrope Variable', ui-sans-serif, system-ui, sans-serif;
 	--font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+
+	/* Defaults. A presentation's theme.ts overrides these on its <main>, see $lib/themes. */
+	--color-surface: var(--color-gray-950);
+	--color-ink: var(--color-gray-100);
+	--color-accent: var(--color-yellow-400);
+	--color-on-accent: var(--color-gray-950);
+	--color-highlight: var(--color-teal-300);
+}
+
+.prose {
+	--tw-prose-body: var(--color-ink);
+	--tw-prose-headings: var(--color-ink);
+	--tw-prose-lead: var(--color-ink);
+	--tw-prose-bold: var(--color-ink);
+	--tw-prose-links: var(--color-accent);
+	--tw-prose-counters: color-mix(in oklab, var(--color-ink) 60%, transparent);
+	--tw-prose-bullets: color-mix(in oklab, var(--color-ink) 40%, transparent);
+	--tw-prose-hr: color-mix(in oklab, var(--color-ink) 15%, transparent);
+	--tw-prose-quotes: var(--color-ink);
+	--tw-prose-quote-borders: color-mix(in oklab, var(--color-ink) 15%, transparent);
+	--tw-prose-captions: color-mix(in oklab, var(--color-ink) 60%, transparent);
+	--tw-prose-code: var(--color-ink);
+	--tw-prose-th-borders: color-mix(in oklab, var(--color-ink) 25%, transparent);
+	--tw-prose-td-borders: color-mix(in oklab, var(--color-ink) 15%, transparent);
 }
 
 /* ::view-transition-old(slide) {
@@ -57,8 +81,8 @@
 }
 
 ::selection {
-	color: black;
-	background: yellow;
+	color: var(--color-on-accent);
+	background: var(--color-accent);
 }
 
 pre {

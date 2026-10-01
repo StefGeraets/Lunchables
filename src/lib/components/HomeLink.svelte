@@ -8,7 +8,7 @@
 	href={resolve('/')}
 	aria-label="All presentations"
 	title="All presentations"
-	class="text-gray-500 hover:text-gray-400 {className}"
+	class="text-ink/60 hover:text-ink {className}"
 >
 	<svg
 		xmlns="http://www.w3.org/2000/svg"
