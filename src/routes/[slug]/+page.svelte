@@ -1,5 +1,11 @@
 <script lang="ts">
-	export let data;
+	import { resolve } from '$app/paths';
+	import { getSlides } from '$lib/slides.remote';
+	import { getSlideNav } from '$lib/slides';
+
+	let { data } = $props();
+
+	const nav = $derived(getSlideNav(await getSlides(), data.slug));
 </script>
 
 <!-- SEO -->
@@ -21,7 +27,7 @@
 
 			<!-- Post -->
 			<div class="prose prose-2xl prose-invert max-w-none">
-				<svelte:component this={data.content} />
+				<data.content />
 			</div>
 		</section>
 	{:else if data.meta.type === 'demo'}
@@ -35,7 +41,7 @@
 			<div
 				class="flex flex-col items-center justify-center gap-4 p-4 overflow-auto border border-gray-800 overflow rounded-2xl max-h-[80vh]"
 			>
-				<svelte:component this={data.content} />
+				<data.content />
 			</div>
 		</section>
 	{:else if data.meta.type === 'code'}
@@ -53,15 +59,19 @@
 			<h1 class="font-black text-center text-yellow-400 text-7xl">{data.meta.subtitle}</h1>
 
 			<div class="flex flex-col items-center justify-center gap-4 p-4 rounded-2xl max-h-[80vh]">
-				<svelte:component this={data.content} />
+				<data.content />
 			</div>
 		</section>
 	{/if}
 
 	<footer class="flex justify-between w-full px-6 py-4 text-gray-500">
-		<a href={data.previous}>Previous</a>
-		<a href="/">{data.current} / {data.total}</a>
-		<a href={data.next}>Next</a>
+		<a href={nav.previous ? resolve('/[slug]', { slug: nav.previous }) : resolve('/')}>Previous</a>
+		<a href={resolve('/')}>{nav.current} / {nav.total}</a>
+		{#if nav.next}
+			<a href={resolve('/[slug]', { slug: nav.next })}>Next</a>
+		{:else}
+			<span></span>
+		{/if}
 	</footer>
 </div>
 

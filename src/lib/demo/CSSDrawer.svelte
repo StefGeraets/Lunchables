@@ -1,18 +1,10 @@
-<script>
-	const setDialog = () => {
-		const dialog = document.querySelector('#demo-drawer-css');
-		const open = document.querySelector('#trigger');
-		const close = document.querySelector('#demo-drawer-css .close');
-		open.addEventListener('click', () => dialog.showModal());
-		close.addEventListener('click', () => dialog.close());
-	};
+<script lang="ts">
+	let dialog: HTMLDialogElement;
 </script>
 
-<svelte:window on:load={setDialog()} />
-
-<button id="trigger">Open Dialog</button>
-<dialog id="demo-drawer-css">
-	<button class="close">Cancel</button>
+<button id="trigger" onclick={() => dialog.showModal()}>Open Dialog</button>
+<dialog id="demo-drawer-css" bind:this={dialog}>
+	<button class="close" onclick={() => dialog.close()}>Cancel</button>
 	<h3>Create a new issue</h3>
 	<form method="dialog">
 		<input type="text" placeholder="Title" />

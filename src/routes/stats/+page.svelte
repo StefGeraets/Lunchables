@@ -1,7 +1,5 @@
 <script lang="ts">
-	export let data;
-
-	const { dashboard } = data;
+	import { dashboard } from '$lib/stats/stats';
 
 	const format = (number: number) => {
 		return new Intl.NumberFormat().format(number);

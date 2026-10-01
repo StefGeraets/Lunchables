@@ -1,23 +1,27 @@
+import { fileURLToPath } from 'node:url';
 import adapter from '@sveltejs/adapter-auto';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 import { mdsvex, escapeSvelte } from 'mdsvex';
 import { createHighlighter } from 'shiki';
 
+const highlighter = await createHighlighter({
+	themes: ['github-dark'],
+	langs: ['html', 'css', 'javascript']
+});
+
 /** @type {import('mdsvex').MdsvexOptions} */
 const mdsvexOptions = {
 	extensions: ['.md'],
 	layout: {
-		_: './src/routes/mdsvex.svelte'
+		_: fileURLToPath(new URL('./src/routes/mdsvex.svelte', import.meta.url))
 	},
 	highlight: {
 		highlighter: async (code, lang = 'text') => {
-			const highlighter = await createHighlighter({
-				themes: ['github-dark'],
-				langs: ['javascript', 'typescript']
-			});
-			await highlighter.loadLanguage('javascript', 'typescript', 'html');
-			const html = escapeSvelte(highlighter.codeToHtml(code, { lang, theme: 'github-dark' }));
+			const loaded = highlighter.getLoadedLanguages().includes(lang);
+			const html = escapeSvelte(
+				highlighter.codeToHtml(code, { lang: loaded ? lang : 'text', theme: 'github-dark' })
+			);
 			return `{@html \`${html}\` }`;
 		}
 	}
@@ -26,15 +30,17 @@ const mdsvexOptions = {
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	extensions: ['.svelte', '.md'],
-	// Consult https://kit.svelte.dev/docs/integrations#preprocessors
-	// for more information about preprocessors
 	preprocess: [vitePreprocess(), mdsvex(mdsvexOptions)],
-
+	compilerOptions: {
+		experimental: {
+			async: true
+		}
+	},
 	kit: {
-		// adapter-auto only supports some environments, see https://kit.svelte.dev/docs/adapter-auto for a list.
-		// If your environment is not supported, or you settled on a specific environment, switch out the adapter.
-		// See https://kit.svelte.dev/docs/adapters for more information about adapters.
-		adapter: adapter()
+		adapter: adapter(),
+		experimental: {
+			remoteFunctions: true
+		}
 	}
 };
 

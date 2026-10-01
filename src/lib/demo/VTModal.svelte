@@ -1,34 +1,20 @@
-<script>
-	const setDialog = () => {
-		const dialog = document.querySelector('#demo-modal');
-		const open = document.querySelector('#demo-modal-open');
-		const form = document.querySelector('#demo-modal form');
+<script lang="ts">
+	let dialog: HTMLDialogElement;
 
-		open?.addEventListener('click', open_dialog);
-		form?.addEventListener('submit', close_dialog);
+	const open = () => {
+		document.startViewTransition(() => dialog.showModal());
+	};
 
-		function open_dialog() {
-			document.startViewTransition(() => {
-				dialog.showModal();
-			});
-		}
-
-		function close_dialog(e) {
-			e.preventDefault();
-			const form = e.target;
-			document.startViewTransition(() => {
-				form.submit();
-			});
-		}
+	const close = (event: SubmitEvent) => {
+		event.preventDefault();
+		document.startViewTransition(() => dialog.close());
 	};
 </script>
 
-<svelte:window on:load={setDialog()} />
-
-<button id="demo-modal-open">Open</button>
-<dialog id="demo-modal">
+<button onclick={open}>Open</button>
+<dialog id="demo-modal" bind:this={dialog}>
 	<p>Here to show some nice transitions</p>
-	<form method="dialog">
+	<form method="dialog" onsubmit={close}>
 		<button type="submit">OKE</button>
 	</form>
 </dialog>

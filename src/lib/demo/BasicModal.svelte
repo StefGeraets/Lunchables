@@ -1,17 +1,9 @@
-<script>
-	const setDialog = () => {
-		const trigger = document.querySelector('#demo-modal-open');
-		const dialog = document.querySelector('#demo-modal');
-		trigger?.addEventListener('click', () => {
-			dialog?.showModal();
-		});
-	};
+<script lang="ts">
+	let dialog: HTMLDialogElement;
 </script>
 
-<svelte:window on:load={setDialog()} />
-
-<button id="demo-modal-open">Open</button>
-<dialog id="demo-modal">
+<button onclick={() => dialog.showModal()}>Open</button>
+<dialog bind:this={dialog}>
 	<p>Login</p>
 	<form method="dialog">
 		<input type="text" placeholder="username" />

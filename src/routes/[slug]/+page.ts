@@ -1,27 +1,21 @@
 import { error } from '@sveltejs/kit';
-import type { Slide } from '../../lib/types.js';
+import type { Component } from 'svelte';
+import type { Slide } from '$lib/types';
+import type { PageLoad } from './$types';
 
-export async function load({ params, fetch }) {
-	try {
-		const slide = await import(`../../slides/${params.slug}.md`);
-		const response = await fetch('api/slides');
-		const slides: Slide[] = await response.json();
+type SlideModule = { default: Component; metadata: Omit<Slide, 'slug'> };
 
-		const indexOfCurrent = slides.findIndex((s) => s.slug === params.slug);
-		const previous = indexOfCurrent === 0 ? '/' : slides[indexOfCurrent - 1].slug;
-		const next =
-			indexOfCurrent === slides.length - 1 ? params.slug : slides[indexOfCurrent + 1].slug;
-		const total = slides.length;
+const modules = import.meta.glob<SlideModule>('/src/slides/*.md');
 
-		return {
-			content: slide.default,
-			meta: slide.metadata as Slide,
-			next,
-			previous,
-			total,
-			current: indexOfCurrent + 1
-		};
-	} catch (e: unknown) {
-		error(404, `Could not find ${params.slug} ${e}`);
-	}
-}
+export const load: PageLoad = async ({ params }) => {
+	const importSlide = modules[`/src/slides/${params.slug}.md`];
+	if (!importSlide) error(404, `Could not find ${params.slug}`);
+
+	const slide = await importSlide();
+
+	return {
+		slug: params.slug,
+		content: slide.default,
+		meta: slide.metadata
+	};
+};

@@ -1,65 +1,58 @@
-<script>
-	const openPopover = () => {
-		let button = document.getElementById('md');
-		let popover = document.getElementById('mdp');
+<script lang="ts">
+	let button: HTMLButtonElement;
+	let popover: HTMLDivElement;
 
-		button.addEventListener('click', toggle);
-
-		function update_position() {
-			const target_position = button.getBoundingClientRect();
+	$effect(() => {
+		const updatePosition = () => {
+			const target = button.getBoundingClientRect();
 			popover.style.inset = 'unset';
-			popover.style.top = target_position.bottom + 'px';
-			popover.style.left = target_position.right - target_position.width + 'px';
-		}
-		const resizeObserver = new ResizeObserver(update_position);
+			popover.style.top = target.bottom + 'px';
+			popover.style.left = target.right - target.width + 'px';
+		};
+
+		const resizeObserver = new ResizeObserver(updatePosition);
 		resizeObserver.observe(popover);
-		window.addEventListener('resize', update_position);
-		window.addEventListener('scroll', update_position);
+		window.addEventListener('resize', updatePosition);
+		window.addEventListener('scroll', updatePosition);
 
-		// Animation
-		function toggle() {
-			const is_opening = !popover.matches(':popover-open');
-			const translate = is_opening ? ['0 10px', '0 0'] : ['0 0', '0 10px'];
-			const opacity = is_opening ? [0, 1] : [1, 0];
+		return () => {
+			resizeObserver.disconnect();
+			window.removeEventListener('resize', updatePosition);
+			window.removeEventListener('scroll', updatePosition);
+		};
+	});
 
-			if (is_opening) popover.showPopover();
+	const toggle = () => {
+		const isOpening = !popover.matches(':popover-open');
+		const translate = isOpening ? ['0 10px', '0 0'] : ['0 0', '0 10px'];
+		const opacity = isOpening ? [0, 1] : [1, 0];
 
-			window.requestAnimationFrame(() => {
-				let animation = popover.animate(
-					{
-						translate,
-						opacity
-					},
-					{
-						duration: 300,
-						easing: 'ease-in-out',
-						fill: 'forwards'
-					}
-				);
-				animation.onfinish = () => {
-					if (!is_opening) popover.hidePopover();
-				};
-			});
-		}
+		if (isOpening) popover.showPopover();
 
-		// In Manual mode, you need to trigger keyboard events yourself
-		document.addEventListener('keydown', (event) => {
-			if (
-				event.key === 'Escape' &&
-				popover.hasAttribute('popover') &&
-				popover.matches(':popover-open')
-			) {
-				toggle();
-			}
+		requestAnimationFrame(() => {
+			const animation = popover.animate(
+				{ translate, opacity },
+				{ duration: 300, easing: 'ease-in-out', fill: 'forwards' }
+			);
+			animation.onfinish = () => {
+				if (!isOpening) popover.hidePopover();
+			};
 		});
+	};
+
+	// In Manual mode, you need to trigger keyboard events yourself
+	const onkeydown = (event: KeyboardEvent) => {
+		if (event.key === 'Escape' && popover.matches(':popover-open')) {
+			toggle();
+		}
 	};
 </script>
 
-<svelte:window on:load={openPopover()} />
+<svelte:window {onkeydown} />
 
-<button id="md" class="menu-button">***</button>
+<button class="menu-button" bind:this={button} onclick={toggle}>***</button>
 <!-- Note: Manual Mode Required -->
-<div popover="manual" id="mdp" class="menu">
+<div popover="manual" class="menu" bind:this={popover}>
 	<ul class="menu-demo">
 		<li><a href="#">Settings</a></li>
 		<li><a href="#">My Profile</a></li>

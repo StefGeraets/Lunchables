@@ -1,38 +1,27 @@
-<script>
-	const setDialog = () => {
-		const button = document.querySelector('button[popovertarget=demo-mobile-nav-vt]');
-		const popover = document.querySelector('#demo-mobile-nav-vt');
+<script lang="ts">
+	let popover: HTMLElement;
 
-		button.addEventListener('click', toggle);
-
-		function toggle(e) {
-			const is_opening = !popover.matches(':popover-open');
-			e.preventDefault();
-			document.startViewTransition(() => {
-				if (is_opening) {
-					return popover.showPopover();
-				}
-				return popover.hidePopover();
-			});
-		}
-
-		document.addEventListener('keydown', (e) => {
-			if (
-				e.key === 'Escape' &&
-				popover.hasAttribute('popover') &&
-				popover.matches(':popover-open')
-			) {
-				toggle(e);
-			}
+	const toggle = (event: Event) => {
+		const isOpening = !popover.matches(':popover-open');
+		event.preventDefault();
+		document.startViewTransition(() => {
+			if (isOpening) return popover.showPopover();
+			return popover.hidePopover();
 		});
+	};
+
+	const onkeydown = (event: KeyboardEvent) => {
+		if (event.key === 'Escape' && popover.matches(':popover-open')) {
+			toggle(event);
+		}
 	};
 </script>
 
-<svelte:window on:load={setDialog()} />
+<svelte:window {onkeydown} />
 
-<button popovertarget="demo-mobile-nav-vt">NAV</button>
+<button popovertarget="demo-mobile-nav-vt" onclick={toggle}>NAV</button>
 
-<nav popover id="demo-mobile-nav-vt">
+<nav popover id="demo-mobile-nav-vt" bind:this={popover}>
 	<button class="demo-button" popovertarget="demo-mobile-nav-vt" popovertargetaction="hide">
 		X
 	</button>
