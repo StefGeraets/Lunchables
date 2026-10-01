@@ -99,14 +99,14 @@ If the cover has no `image`, the heading links to the first slide instead.
 
 Run `bun run new slide` (or `bun run new slide my-talk` to skip picking the deck). It shows the deck's last slide, then asks:
 
-| Prompt       | Default                                 | Notes                                           |
-| ------------ | --------------------------------------- | ----------------------------------------------- |
-| Presentation | the only deck, or a list to pick from   | Skipped when you pass the deck name             |
-| Order        | last slide's order + 1                  | Must be a whole number that no other slide uses |
-| Slide type   | the type of the slide before it         | `content`, `demo`, `ship` or `code`             |
-| Title        | the title of the slide before it        | Slides in one section share a title             |
-| Subtitle     | empty                                   | Only asked for `demo` and `ship`                |
-| File name    | order + subtitle (or title) in URL form | Becomes the slide's URL. Must not exist yet     |
+| Prompt       | Default                                 | Notes                                                                       |
+| ------------ | --------------------------------------- | --------------------------------------------------------------------------- |
+| Presentation | the only deck, or a list to pick from   | Skipped when you pass the deck name                                         |
+| Position     | At the end                              | `At the end` or `Before <slide>`. Each option says how many slides it moves |
+| Slide type   | the type of the slide before it         | `content`, `demo`, `ship` or `code`                                         |
+| Title        | the title of the slide before it        | Slides in one section share a title                                         |
+| Subtitle     | empty                                   | Only asked for `demo` and `ship`                                            |
+| File name    | order + subtitle (or title) in URL form | Becomes the slide's URL. Must not exist yet                                 |
 
 The new file gets the frontmatter plus a starter body for its type:
 
@@ -115,7 +115,13 @@ The new file gets the frontmatter plus a starter body for its type:
 - `ship`: a `ShipScore` with empty versions, if the deck has `components/ShipScore.svelte`. Otherwise a note on where to copy it from
 - `code`: no body
 
-After each slide the script asks "Add another slide?", and `bun run new deck` asks the same once the deck exists. To add a slide between existing ones, pick an unused order number in between (the install-nothing deck ends at order 50, so 34 to 49 are free).
+After each slide the script asks "Add another slide?", and `bun run new deck` asks the same once the deck exists.
+
+### Inserting between slides
+
+Pick `Before <slide>` to put the new slide in front of an existing one. It gets the order right after the previous slide. If that number is taken, the slides after it each move up by one: the `order` in their frontmatter changes, and a file name that starts with the old number gets the new one (`10modals_vt_ship.md` becomes `11modals_vt_ship.md`, so its URL changes too). Shifting stops at the first free number, so slides past a gap stay where they are. In install-nothing, 34 to 49 are free, so a slide inserted before `50end` moves nothing.
+
+The summary lists every moved slide. Files only change after the last question, so Ctrl+C leaves the deck untouched.
 
 ## Writing slides
 

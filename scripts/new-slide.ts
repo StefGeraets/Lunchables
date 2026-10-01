@@ -1,4 +1,4 @@
-import { readdir, readFile, writeFile } from 'node:fs/promises';
+import { readdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { Slide } from '../src/lib/types';
 import {
@@ -10,12 +10,14 @@ import {
 	info,
 	isSlug,
 	listPresentations,
+	pick,
 	presentationsDir,
 	slugify
 } from './cli';
 
 type SlideType = Slide['type'];
-type SlideInfo = { file: string; title: string; type: SlideType; order: number };
+type SlideInfo = { file: string; title: string; subtitle: string; type: SlideType; order: number };
+type Move = { slide: SlideInfo; order: number; file: string };
 
 const types: SlideType[] = ['content', 'demo', 'ship', 'code'];
 
@@ -41,6 +43,7 @@ const readSlides = async (slidesDir: string): Promise<SlideInfo[]> => {
 			return {
 				file,
 				title: field('title'),
+				subtitle: field('subtitle'),
 				type: field('type') as SlideType,
 				order: Number(field('order'))
 			};
@@ -48,6 +51,44 @@ const readSlides = async (slidesDir: string): Promise<SlideInfo[]> => {
 	);
 
 	return slides.sort((first, second) => first.order - second.order);
+};
+
+/**
+ * Slides that have to move up one to free `order`. Shifting stops at the first gap,
+ * so a deck with free numbers (say 34 to 49) only renames what it must.
+ * A file name that starts with the old order gets the new order as prefix.
+ */
+const planShift = (slides: SlideInfo[], order: number): Move[] => {
+	const moves: Move[] = [];
+	let occupied = order;
+	for (const slide of slides) {
+		if (slide.order < order) continue;
+		if (slide.order > occupied) break;
+		const prefix = String(slide.order);
+		const numbered = slide.file.startsWith(prefix) && !/\d/.test(slide.file[prefix.length]);
+		const file = numbered ? `${slide.order + 1}${slide.file.slice(prefix.length)}` : slide.file;
+		moves.push({ slide, order: slide.order + 1, file });
+		occupied = Math.max(occupied, slide.order + 1);
+	}
+
+	// Keep the old name if the new one belongs to a slide that isn't moving.
+	const moving = new Set(moves.map((move) => move.slide.file));
+	const names = new Set(slides.map((slide) => slide.file));
+	return moves.map((move) =>
+		move.file !== move.slide.file && names.has(move.file) && !moving.has(move.file)
+			? { ...move, file: move.slide.file }
+			: move
+	);
+};
+
+/** Rewrites `order` in the frontmatter and renames the file, highest order first. */
+const applyMoves = async (slidesDir: string, moves: Move[]) => {
+	for (const move of moves.toReversed()) {
+		const from = join(slidesDir, move.slide.file);
+		const source = await readFile(from, 'utf8');
+		await writeFile(from, source.replace(/^(---\n[\s\S]*?^order:\s*)\d+/m, `$1${move.order}`));
+		if (move.file !== move.slide.file) await rename(from, join(slidesDir, move.file));
+	}
 };
 
 const body = (type: SlideType, deckDir: string) => {
@@ -94,20 +135,29 @@ export const newSlide = async (deck?: string) => {
 	const last = slides.at(-1);
 	if (last) info(`Last slide in ${deck}`, `${last.order} · ${last.title}`, last.file);
 
-	const nextOrder = String((last?.order ?? 0) + 1);
-	const order = Number(
-		await ask('Order', {
-			fallback: nextOrder,
-			validate: (value) => {
-				const number = Number(value);
-				if (!Number.isInteger(number) || number < 1) return 'Use a whole number above 0';
-				const taken = slides.find((slide) => slide.order === number);
-				if (taken) return `${number} is already used by ${taken.file}`;
-			}
-		})
-	);
+	// The new slide goes right after the slide before the chosen position.
+	const orderBefore = (index: number) => (slides[index - 1]?.order ?? 0) + 1;
+	const describe = (slide: SlideInfo) =>
+		`${slide.order} · ${slide.title}${slide.subtitle ? ` · ${slide.subtitle}` : ''}`;
+	const movesHint = (count: number) =>
+		count ? `moves ${count} slide${count === 1 ? '' : 's'} up` : 'fits in a gap, nothing moves';
 
-	const previous = slides.findLast((slide) => slide.order < order);
+	const position = await pick(
+		'Position',
+		[
+			{ value: slides.length, label: 'At the end', hint: last && `after ${describe(last)}` },
+			...slides.map((slide, index) => ({
+				value: index,
+				label: `Before ${describe(slide)}`,
+				hint: movesHint(planShift(slides, orderBefore(index)).length)
+			}))
+		],
+		slides.length
+	);
+	const order = orderBefore(position);
+	const moves = planShift(slides, order);
+
+	const previous = slides[position - 1];
 	const type = await choose('Slide type', types, previous?.type ?? 'content', typeHints);
 
 	const title = await ask('Title', {
@@ -117,11 +167,16 @@ export const newSlide = async (deck?: string) => {
 
 	const subtitle = type === 'demo' || type === 'ship' ? await ask('Subtitle (optional)') : '';
 
+	const moved = new Set(moves.map((move) => move.slide.file));
+	const finalNames = new Set([
+		...slides.filter((slide) => !moved.has(slide.file)).map((slide) => slide.file),
+		...moves.map((move) => move.file)
+	]);
 	const name = await ask('File name', {
 		fallback: `${order}${slugify(subtitle || title)}`,
 		validate: (value) => {
 			if (!isSlug(value)) return 'Use lowercase letters, numbers and dashes';
-			if (exists(join(slidesDir, `${value}.md`))) return `${value}.md already exists`;
+			if (finalNames.has(`${value}.md`)) return `${value}.md already exists`;
 		}
 	});
 
@@ -133,10 +188,17 @@ order: ${order}
 
 ${body(type, deckDir)}`;
 
+	await applyMoves(slidesDir, moves);
 	const path = join(slidesDir, `${name}.md`);
 	await writeFile(path, await format(source, path));
 
-	created([path], `http://localhost:5173/${deck}/${name}`);
+	created(
+		[path],
+		`http://localhost:5173/${deck}/${name}`,
+		moves
+			.filter((move) => move.file !== move.slide.file || move.order !== move.slide.order)
+			.map((move) => [`${move.slide.file} (${move.slide.order})`, `${move.file} (${move.order})`])
+	);
 
 	return deck;
 };

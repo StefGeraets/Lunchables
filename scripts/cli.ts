@@ -39,16 +39,21 @@ export const info = (label: string, value: string, detail = '') =>
 		symbol: muted('●')
 	});
 
-/** Lists the written files and the URL to open them. */
-export const created = (paths: string[], url: string) => {
-	const files = paths.map((path) => {
-		const slash = path.lastIndexOf('/') + 1;
-		return `${muted(path.slice(0, slash))}${path.slice(slash)}`;
-	});
+const dimFolder = (path: string) => {
+	const slash = path.lastIndexOf('/') + 1;
+	return `${muted(path.slice(0, slash))}${path.slice(slash)}`;
+};
+
+/** Lists the written files, any renamed slides and the URL to open. */
+export const created = (paths: string[], url: string, moved: [from: string, to: string][] = []) => {
+	const renames = moved.length
+		? [accent('Moved'), ...moved.map(([from, to]) => `${muted(from)} ${muted('→')} ${to}`)]
+		: [];
 	clack.log.success(
 		[
 			accent('Created'),
-			...files,
+			...paths.map(dimFolder),
+			...renames,
 			`${muted('→')} ${accent.underline(url)}  ${muted('bun run dev')}`
 		].join('\n')
 	);
@@ -80,6 +85,10 @@ export const choose = async <T extends string>(
 			initialValue: fallback
 		})
 	);
+
+/** Select with custom labels and hints. */
+export const pick = async <T>(question: string, options: clack.Option<T>[], initialValue: T) =>
+	orAbort(await clack.select<T>({ message: question, options, initialValue, maxItems: 12 }));
 
 export const confirm = async (question: string) =>
 	orAbort(await clack.confirm({ message: question, initialValue: false }));
