@@ -13,15 +13,17 @@ bun install
 bun run dev        # http://localhost:5173, redirects to the default deck
 ```
 
-| Command           | What it does                    |
-| ----------------- | ------------------------------- |
-| `bun run dev`     | Start the dev server            |
-| `bun run build`   | Build and prerender every deck  |
-| `bun run preview` | Serve the production build      |
-| `bun run check`   | Type check with svelte-check    |
-| `bun run lint`    | Prettier and ESLint             |
-| `bun run format`  | Format everything with Prettier |
-| `bun run new`     | Create a new presentation       |
+| Command                    | What it does                          |
+| -------------------------- | ------------------------------------- |
+| `bun run dev`              | Start the dev server                  |
+| `bun run build`            | Build and prerender every deck        |
+| `bun run preview`          | Serve the production build            |
+| `bun run check`            | Type check with svelte-check          |
+| `bun run lint`             | Prettier and ESLint                   |
+| `bun run format`           | Format everything with Prettier       |
+| `bun run new`              | Create a deck or a slide (asks which) |
+| `bun run new deck`         | Create a new presentation             |
+| `bun run new slide [deck]` | Add a slide to a presentation         |
 
 ## Project layout
 
@@ -50,7 +52,7 @@ src/
 
 ## Adding a presentation
 
-Run `bun run new` and answer the prompts:
+Run `bun run new deck` and answer the prompts:
 
 | Prompt           | Default               | Notes                                                                                              |
 | ---------------- | --------------------- | -------------------------------------------------------------------------------------------------- |
@@ -60,7 +62,7 @@ Run `bun run new` and answer the prompts:
 | Cover heading    | the title             |                                                                                                    |
 | Cover image path | none                  | Type, paste or drag a file into the terminal. It is copied to `assets/cover.<ext>`. Enter skips it |
 
-Press Enter to accept a default. Ctrl+C or Ctrl+D stops without writing anything.
+Press Enter to accept a default. Ctrl+C or Ctrl+D stops without writing the deck or slide you were working on.
 
 The script creates `config.ts`, a first slide at `slides/1intro.md` and, if you gave an image, `assets/cover.<ext>`. Run `bun run dev` and open `/<folder>`.
 
@@ -92,6 +94,28 @@ The script only writes files, so you can also create them yourself:
 That's it. The registry, the routes and the build all pick up the new folder on their own. To make `/` open your deck, change `defaultPresentation` in [src/lib/presentations.ts](src/lib/presentations.ts).
 
 If the cover has no `image`, the heading links to the first slide instead.
+
+## Adding a slide
+
+Run `bun run new slide` (or `bun run new slide my-talk` to skip picking the deck). It shows the deck's last slide, then asks:
+
+| Prompt       | Default                                        | Notes                                           |
+| ------------ | ---------------------------------------------- | ----------------------------------------------- |
+| Presentation | the only deck, or a numbered list to pick from | Skipped when you pass the deck name             |
+| Order        | last slide's order + 1                         | Must be a whole number that no other slide uses |
+| Slide type   | the type of the slide before it                | `content`, `demo`, `ship` or `code`             |
+| Title        | the title of the slide before it               | Slides in one section share a title             |
+| Subtitle     | empty                                          | Only asked for `demo` and `ship`                |
+| File name    | order + subtitle (or title) in URL form        | Becomes the slide's URL. Must not exist yet     |
+
+The new file gets the frontmatter plus a starter body for its type:
+
+- `content`: two placeholder bullets
+- `demo`: a commented-out component import and an empty `html` code block
+- `ship`: a `ShipScore` with empty versions, if the deck has `components/ShipScore.svelte`. Otherwise a note on where to copy it from
+- `code`: no body
+
+After each slide the script asks "Add another slide?", and `bun run new deck` asks the same once the deck exists. To add a slide between existing ones, pick an unused order number in between (the install-nothing deck ends at order 50, so 34 to 49 are free).
 
 ## Writing slides
 
