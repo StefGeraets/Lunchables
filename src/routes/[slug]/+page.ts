@@ -14,7 +14,6 @@ export const load: PageLoad = async ({ params }) => {
 	const slide = await importSlide();
 
 	return {
-		slug: params.slug,
 		content: slide.default,
 		meta: slide.metadata
 	};

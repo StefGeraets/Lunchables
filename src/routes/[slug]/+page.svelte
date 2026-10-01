@@ -1,11 +1,5 @@
 <script lang="ts">
-	import { resolve } from '$app/paths';
-	import { getSlides } from '$lib/slides.remote';
-	import { getSlideNav } from '$lib/slides';
-
 	let { data } = $props();
-
-	const nav = $derived(getSlideNav(await getSlides(), data.slug));
 </script>
 
 <!-- SEO -->
@@ -15,7 +9,7 @@
 	<meta property="og:title" content={data.meta.title} />
 </svelte:head>
 
-<div class="flex flex-col items-center justify-between w-screen h-screen max-h-screen slide">
+<div class="flex flex-col items-center justify-between w-screen flex-1 min-h-0 slide">
 	{#if data.meta.type === 'content'}
 		<section class="flex flex-col justify-center w-5/6 h-full pt-10 mx-auto">
 			<!-- Title -->
@@ -63,25 +57,11 @@
 			</div>
 		</section>
 	{/if}
-
-	<footer class="flex justify-between w-full px-6 py-4 text-gray-500">
-		<a href={nav.previous ? resolve('/[slug]', { slug: nav.previous }) : resolve('/')}>Previous</a>
-		<a href={resolve('/')}>{nav.current} / {nav.total}</a>
-		{#if nav.next}
-			<a href={resolve('/[slug]', { slug: nav.next })}>Next</a>
-		{:else}
-			<span></span>
-		{/if}
-	</footer>
 </div>
 
 <style>
 	.slide {
 		view-transition-name: slide;
-	}
-
-	footer {
-		view-transition-name: footer;
 	}
 
 	hgroup {

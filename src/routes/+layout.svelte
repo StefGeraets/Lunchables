@@ -7,6 +7,7 @@
 	import { page } from '$app/state';
 	import { getSlides } from '$lib/slides.remote';
 	import { getSlideNav } from '$lib/slides';
+	import SlideFooter from '$lib/components/SlideFooter.svelte';
 
 	let { children } = $props();
 
@@ -33,6 +34,8 @@
 					goto(resolve('/[slug]', { slug: slides[0].slug }));
 				} else if (nav.next) {
 					goto(resolve('/[slug]', { slug: nav.next }));
+				} else {
+					goto(resolve('/'));
 				}
 				break;
 			case 'ArrowLeft':
@@ -49,6 +52,10 @@
 
 <svelte:window onkeydown={navigate} />
 
-<main class="w-screen h-screen text-gray-100 bg-gray-950">
+<main class="flex flex-col w-screen h-screen text-gray-100 bg-gray-950">
 	{@render children()}
+
+	{#if page.params.slug}
+		<SlideFooter slug={page.params.slug} />
+	{/if}
 </main>
