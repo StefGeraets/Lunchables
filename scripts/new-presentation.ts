@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { readdirSync } from 'node:fs';
 import { copyFile, mkdir, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
@@ -30,6 +31,14 @@ const imageProblem = (input: string) => {
 	if (!exists(path)) return 'File not found';
 };
 
+const gitUserName = () => {
+	try {
+		return execFileSync('git', ['config', 'user.name'], { encoding: 'utf8' }).trim();
+	} catch {
+		return '';
+	}
+};
+
 /** Prompts for a new presentation, writes it and returns its folder name. */
 export const newPresentation = async () => {
 	const title = await ask('Presentation title', {
@@ -37,6 +46,9 @@ export const newPresentation = async () => {
 	});
 	const id = await ask('Folder / URL', { fallback: slugify(title), validate: folderProblem });
 	const description = await ask('Description (optional)');
+	const author = await ask('Author (optional, shown on the home page)', {
+		fallback: gitUserName()
+	});
 	const heading = await ask('Cover heading', { fallback: title });
 	const image = cleanPath(
 		await ask('Cover image path (optional, type, paste or drag a file)', {
@@ -53,6 +65,8 @@ ${coverFile ? `import cover from './assets/${coverFile}';` : ''}
 export default {
 	title: ${JSON.stringify(title)},
 	description: ${JSON.stringify(description)},
+	date: ${JSON.stringify(new Date().toISOString().slice(0, 10))},
+	${author ? `author: ${JSON.stringify(author)},` : ''}
 	cover: {
 		${coverFile ? `image: cover, alt: ${JSON.stringify(title)},` : ''}
 		heading: ${JSON.stringify(heading)}

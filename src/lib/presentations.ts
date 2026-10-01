@@ -11,4 +11,7 @@ export const presentations: Record<string, PresentationConfig> = Object.fromEntr
 
 export const presentationIds = Object.keys(presentations);
 
-export const defaultPresentation = 'install-nothing';
+/** Every presentation with its id, newest first. */
+export const presentationList = Object.entries(presentations)
+	.map(([id, config]) => ({ id, ...config }))
+	.sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title));

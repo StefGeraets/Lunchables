@@ -10,7 +10,7 @@ The project uses [bun](https://bun.sh).
 
 ```bash
 bun install
-bun run dev        # http://localhost:5173, redirects to the default deck
+bun run dev        # http://localhost:5173, the overview of all presentations
 ```
 
 | Command                    | What it does                          |
@@ -36,14 +36,17 @@ src/
       components/             components only this deck uses (demos, ShipScore)
       assets/                 images only this deck uses
   lib/
-    presentations.ts          finds every deck's config.ts, sets defaultPresentation
+    presentations.ts          finds every deck's config.ts, sorts them newest first
     slides.remote.ts          getSlides(deck), a prerendered remote function
     slides.ts                 previous/next/counter logic
     types.ts                  Slide and PresentationConfig
     components/SlideFooter.svelte
+    components/Cover.svelte   cover markup, used by the cover page and the previews
+    components/CoverPreview.svelte   scaled-down live cover for the home grid
+    components/PresentationCard.svelte, HomeLink.svelte
     components/custom/        Markdown element overrides, shared by all decks
   routes/
-    +page.ts                  / redirects to the default deck
+    +page.svelte              / overview: a grid of every presentation
     [deck]/+page.svelte       deck cover
     [deck]/+layout.svelte     keyboard navigation and footer
     [deck]/[slug]/            a single slide
@@ -59,6 +62,7 @@ Run `bun run new deck` and answer the prompts:
 | Title            | none                  | Required                                                                                           |
 | Folder / URL     | the title in URL form | Lowercase letters, numbers and dashes. Must not exist yet or match a route in `src/routes`         |
 | Description      | empty                 | Becomes the cover's meta description                                                               |
+| Author           | your git user name    | Shown on the home page card only. Leave empty to omit                                              |
 | Cover heading    | the title             |                                                                                                    |
 | Cover image path | none                  | Type, paste or drag a file into the terminal. It is copied to `assets/cover.<ext>`. Enter skips it |
 
@@ -80,6 +84,8 @@ The script only writes files, so you can also create them yourself:
    export default {
    	title: 'My talk',
    	description: 'Shown as the meta description of the cover page',
+   	date: '2026-10-01', // YYYY-MM-DD, the home page lists newest first
+   	author: 'Your name', // optional, home page card only
    	cover: {
    		image: cover, // optional
    		alt: 'My talk logo', // optional, falls back to the title
@@ -91,9 +97,13 @@ The script only writes files, so you can also create them yourself:
 3. Add slides to `slides/` (see the next section).
 4. Open `/my-talk`.
 
-That's it. The registry, the routes and the build all pick up the new folder on their own. To make `/` open your deck, change `defaultPresentation` in [src/lib/presentations.ts](src/lib/presentations.ts).
+That's it. The registry, the routes, the home page and the build all pick up the new folder on their own. `bun run new deck` sets `date` to today; change it if you want the deck sorted by the day you give the talk.
 
 If the cover has no `image`, the heading links to the first slide instead.
+
+## Home page
+
+`/` shows every presentation as a card, newest `date` first. Each card shows a live, scaled-down render of the deck's cover (the real cover component, not a screenshot), then the title, description, and a line with the author, date and slide count. The author appears only here, never on the cover or the slides. Click a card to open its cover: the preview zooms into the full cover with a view transition, and going back shrinks it into its card again. With reduced motion turned on in the OS, all view transitions are skipped.
 
 ## Adding a slide
 
@@ -212,12 +222,12 @@ Files in `static/` are served from `/` and work with an absolute path (`/favicon
 
 ## Presenting
 
-| Key            | Action                                                                                         |
-| -------------- | ---------------------------------------------------------------------------------------------- |
-| `→` or `Space` | Next slide. On the cover this opens the first slide, on the last slide it returns to the cover |
-| `←`            | Previous slide. On the first slide it returns to the cover                                     |
+| Key            | Action                                                                                               |
+| -------------- | ---------------------------------------------------------------------------------------------------- |
+| `→` or `Space` | Next slide. On the cover this opens the first slide, on the last slide it returns to the cover       |
+| `←`            | Previous slide. On the first slide it returns to the cover, on the cover it returns to the home page |
 
-The footer on every slide has Previous, a counter (`6 / 34`) and Next. On the last slide Next becomes a reload icon that links back to the cover. Clicking the counter opens a list of every slide, with the current one highlighted. Pick a slide to jump to it.
+The footer on every slide has a grid icon that opens the home page, Previous, a counter (`6 / 34`) and Next. The cover has the same grid icon in its top-left corner. On the last slide Next becomes a reload icon that links back to the cover. Clicking the counter opens a list of every slide, with the current one highlighted. Pick a slide to jump to it.
 
 Page changes animate with the View Transitions API in browsers that support it. The slide, the title and the footer each have their own transition name.
 

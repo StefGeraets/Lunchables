@@ -2,6 +2,7 @@
 	import { resolve } from '$app/paths';
 	import { getSlides } from '$lib/slides.remote';
 	import { getSlideNav } from '$lib/slides';
+	import HomeLink from './HomeLink.svelte';
 
 	let { deck, slug }: { deck: string; slug: string } = $props();
 
@@ -27,14 +28,17 @@
 
 {#if nav.current > 0}
 	<footer class="flex justify-between w-full px-6 py-4 text-gray-500">
-		<a href={href(nav.previous)}>Previous</a>
-		<button popovertarget="slide-picker" class="cursor-pointer hover:text-gray-300">
+		<div class="flex items-center gap-4">
+			<HomeLink />
+			<a href={href(nav.previous)} class="hover:text-gray-400">Previous</a>
+		</div>
+		<button popovertarget="slide-picker" class="cursor-pointer hover:text-gray-400">
 			{nav.current} / {nav.total}
 		</button>
 		{#if nav.next}
-			<a href={href(nav.next)}>Next</a>
+			<a href={href(nav.next)} class="hover:text-gray-400">Next</a>
 		{:else}
-			<a href={href()} aria-label="Back to start">
+			<a href={href()} aria-label="Back to start" class="hover:text-gray-400">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					width="24"

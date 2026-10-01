@@ -1,12 +1,13 @@
 <script lang="ts">
-	import { resolve } from '$app/paths';
+	import Cover from '$lib/components/Cover.svelte';
+	import HomeLink from '$lib/components/HomeLink.svelte';
 	import { getSlides } from '$lib/slides.remote';
 
 	let { data } = $props();
 
-	const { title, description, cover } = $derived(data.presentation);
+	const { title, description } = $derived(data.presentation);
 	const slides = $derived(await getSlides(data.deck));
-	const firstSlide = $derived(resolve('/[deck]/[slug]', { deck: data.deck, slug: slides[0].slug }));
+	const firstSlide = $derived({ deck: data.deck, slug: slides[0].slug });
 </script>
 
 <svelte:head>
@@ -16,17 +17,13 @@
 	{/if}
 </svelte:head>
 
-<div class="flex flex-col items-center justify-center w-3/4 h-full gap-20 mx-auto">
-	{#if cover.image}
-		<a href={firstSlide} class="w-2/3 mb-16"
-			><img src={cover.image} alt={cover.alt ?? title} class="w-full" /></a
-		>
-	{/if}
-	<h1 class="font-black tracking-tighter text-center uppercase text-9xl [word-spacing:0.5em]">
-		{#if cover.image}
-			{cover.heading}
-		{:else}
-			<a href={firstSlide}>{cover.heading}</a>
-		{/if}
-	</h1>
+<HomeLink class="absolute p-6 top-0 left-0 z-10" />
+
+<!-- Same name as the home grid card, so the card preview morphs into this cover. -->
+<div
+	class="flex-1 min-h-0"
+	style:view-transition-name="cover-{data.deck}"
+	style:view-transition-class="deck-cover"
+>
+	<Cover presentation={data.presentation} {firstSlide} />
 </div>

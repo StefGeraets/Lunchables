@@ -24,7 +24,7 @@
 				goto(slideHref(nav ? nav.next : slides[0].slug));
 				break;
 			case 'ArrowLeft':
-				if (nav) goto(slideHref(nav.previous));
+				goto(nav ? slideHref(nav.previous) : resolve('/'));
 				break;
 		}
 	};
