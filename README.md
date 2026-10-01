@@ -21,6 +21,7 @@ bun run dev        # http://localhost:5173, redirects to the default deck
 | `bun run check`   | Type check with svelte-check    |
 | `bun run lint`    | Prettier and ESLint             |
 | `bun run format`  | Format everything with Prettier |
+| `bun run new`     | Create a new presentation       |
 
 ## Project layout
 
@@ -48,6 +49,24 @@ src/
 ```
 
 ## Adding a presentation
+
+Run `bun run new` and answer the prompts:
+
+| Prompt           | Default               | Notes                                                                                              |
+| ---------------- | --------------------- | -------------------------------------------------------------------------------------------------- |
+| Title            | none                  | Required                                                                                           |
+| Folder / URL     | the title in URL form | Lowercase letters, numbers and dashes. Must not exist yet or match a route in `src/routes`         |
+| Description      | empty                 | Becomes the cover's meta description                                                               |
+| Cover heading    | the title             |                                                                                                    |
+| Cover image path | none                  | Type, paste or drag a file into the terminal. It is copied to `assets/cover.<ext>`. Enter skips it |
+
+Press Enter to accept a default. Ctrl+C or Ctrl+D stops without writing anything.
+
+The script creates `config.ts`, a first slide at `slides/1intro.md` and, if you gave an image, `assets/cover.<ext>`. Run `bun run dev` and open `/<folder>`.
+
+### By hand
+
+The script only writes files, so you can also create them yourself:
 
 1. Create a folder under `src/presentations/`. The folder name becomes the URL, so use something like `my-talk` to get `/my-talk`.
 2. Add `config.ts`:

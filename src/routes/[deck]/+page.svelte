@@ -11,7 +11,9 @@
 
 <svelte:head>
 	<title>{title}</title>
-	<meta name="description" content={description} />
+	{#if description}
+		<meta name="description" content={description} />
+	{/if}
 </svelte:head>
 
 <div class="flex flex-col items-center justify-center w-3/4 h-full gap-20 mx-auto">
