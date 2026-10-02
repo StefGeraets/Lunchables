@@ -5,5 +5,5 @@ order: 50
 ---
 
 <div class="flex justify-center mt-12 text-4xl">
-	Knox lives in eventix/go/knox, moderation in backend/beatport
+	Repo: <a href="https://github.com/StefGeraets/lunchables">github.com/StefGeraets/lunchables</a>
 </div>

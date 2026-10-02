@@ -1,7 +1,7 @@
 ---
 title: Moderation today
 type: 'content'
-order: 8
+order: 11
 ---
 
 <div class="text-4xl">

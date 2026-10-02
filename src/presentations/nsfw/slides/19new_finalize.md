@@ -1,7 +1,7 @@
 ---
 title: The new setup
 type: 'content'
-order: 16
+order: 19
 ---
 
 - Moderate once, on the temp object. The copy to final doesn't need a second run

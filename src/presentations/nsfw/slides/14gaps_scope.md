@@ -1,7 +1,7 @@
 ---
 title: Why change
 type: 'content'
-order: 11
+order: 14
 ---
 
 - Only Beatport event images get moderated. Promo blocks and ticket templates don't

@@ -1,7 +1,7 @@
 ---
 title: 'Why S3 + Rekognition'
 type: 'content'
-order: 13
+order: 16
 ---
 
 - Knox already writes everything to S3

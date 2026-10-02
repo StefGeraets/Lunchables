@@ -1,7 +1,7 @@
 ---
 title: Why change
 type: 'content'
-order: 10
+order: 13
 ---
 
 <p class="text-5xl">The image <em>passes</em> moderation when:</p>

@@ -109,3 +109,20 @@ code .line::before {
 	text-align: right;
 	color: rgba(115, 138, 148, 0.4);
 }
+
+/* ```mermaid blocks, see $lib/mermaid.ts. Hide the source until the diagram replaces it. */
+.mermaid {
+	width: 100%;
+}
+
+/* Mermaid caps the svg at its natural width, too small for a slide */
+.mermaid svg {
+	width: 100%;
+	max-width: none !important;
+	height: auto;
+	max-height: 62vh;
+}
+
+.mermaid:not([data-processed]) {
+	visibility: hidden;
+}
