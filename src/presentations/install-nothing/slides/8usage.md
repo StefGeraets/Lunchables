@@ -8,4 +8,4 @@ order: 8
   import grid from '../assets/grid.png'
 </script>
 
-<img src={grid} alt="Svelte" loading="lazy" />
+<img src={grid} alt="Svelte" />

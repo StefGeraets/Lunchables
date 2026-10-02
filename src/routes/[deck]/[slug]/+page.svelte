@@ -1,5 +1,14 @@
 <script lang="ts">
+	import { renderDiagrams } from '$lib/mermaid';
+
 	let { data } = $props();
+
+	let slide: HTMLElement | undefined = $state();
+
+	$effect(() => {
+		void data.content;
+		if (slide) renderDiagrams(slide);
+	});
 </script>
 
 <!-- SEO -->
@@ -9,7 +18,10 @@
 	<meta property="og:title" content={data.meta.title} />
 </svelte:head>
 
-<div class="flex flex-col items-center justify-between w-screen flex-1 min-h-0 slide">
+<div
+	bind:this={slide}
+	class="flex flex-col items-center justify-between w-screen flex-1 min-h-0 slide"
+>
 	{#if data.meta.type === 'content'}
 		<section class="flex flex-col justify-center w-5/6 h-full pt-10 mx-auto">
 			<!-- Title -->

@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
+	import { goto, preloadData } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import SlideFooter from '$lib/components/SlideFooter.svelte';
+	import { preloadImages } from '$lib/images';
 	import { getSlides } from '$lib/slides.remote';
 	import { getSlideNav } from '$lib/slides';
 	import { themeStyle } from '$lib/themes';
@@ -13,6 +14,16 @@
 		slug
 			? resolve('/[deck]/[slug]', { deck: data.deck, slug })
 			: resolve('/[deck]', { deck: data.deck });
+
+	$effect(() => preloadImages(data.deck));
+
+	$effect(() => {
+		const slug = page.params.slug;
+		getSlides(data.deck).then((slides) => {
+			const next = slug ? getSlideNav(slides, slug).next : slides[0]?.slug;
+			if (next) preloadData(slideHref(next));
+		});
+	});
 
 	const navigate = async (key: KeyboardEvent) => {
 		// Leave browser shortcuts (Ctrl+R) and typing in demo inputs alone.
