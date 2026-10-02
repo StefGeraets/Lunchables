@@ -223,7 +223,7 @@ Components used by one deck go in that deck's `components/` folder and are impor
 
 Fenced code blocks are highlighted at build time with Shiki's `github-dark` theme and get line numbers. Code renders in JetBrains Mono with ligatures, so `!==` and `=>` show as single glyphs.
 
-Only `html`, `css` and `javascript` are loaded. Any other language renders as plain text. To add one, extend `langs` in [svelte.config.js](svelte.config.js).
+Only `html`, `css`, `javascript` and `go` are loaded. Any other language renders as plain text. To add one, extend `langs` in [svelte.config.js](svelte.config.js).
 
 ### Markdown styling
 
