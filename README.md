@@ -225,6 +225,23 @@ Fenced code blocks are highlighted at build time with Shiki's `github-dark` them
 
 Only `html`, `css`, `javascript` and `go` are loaded. Any other language renders as plain text. To add one, extend `langs` in [svelte.config.js](svelte.config.js).
 
+### Diagrams
+
+Write a [Mermaid](https://mermaid.js.org/intro/) diagram as a `mermaid` code block in any slide. No import needed:
+
+````md
+```mermaid
+sequenceDiagram
+	autonumber
+	Browser->>Knox: upload file
+	Knox-->>Browser: 204
+```
+````
+
+The diagram renders in the browser when the slide opens and takes its colors from the deck's theme (`ink` for lines and text, `accent` for borders, `highlight` for notes). It scales to the width of the slide, up to 62% of the screen height. The code lives in [src/lib/mermaid.ts](src/lib/mermaid.ts); Mermaid is only downloaded on slides that have a diagram.
+
+To highlight steps in a sequence diagram, wrap them in a `rect` block, for example `rect rgba(239, 68, 68, 0.25)`.
+
 ### Markdown styling
 
 [src/routes/mdsvex.svelte](src/routes/mdsvex.svelte) replaces some Markdown elements with custom components from `src/lib/components/custom/`, for every deck:

@@ -1,7 +1,7 @@
 ---
 title: 'Open: running it'
 type: 'content'
-order: 21
+order: 23
 ---
 
 - Metadata is public: anyone loading the image sees its moderation scores

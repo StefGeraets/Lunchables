@@ -1,7 +1,7 @@
 ---
 title: Knox
 type: 'content'
-order: 2
+order: 4
 ---
 
 - Our upload service, written in Go

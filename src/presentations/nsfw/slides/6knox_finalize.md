@@ -2,7 +2,7 @@
 title: Knox
 subtitle: Finalize
 type: 'demo'
-order: 4
+order: 6
 ---
 
 <div class="text-3xl leading-relaxed text-center">

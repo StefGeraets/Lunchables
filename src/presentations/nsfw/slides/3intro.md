@@ -1,7 +1,7 @@
 ---
 title: What we're doing today
 type: 'content'
-order: 1
+order: 3
 ---
 
 - What _Knox_ is and how an upload becomes a public image

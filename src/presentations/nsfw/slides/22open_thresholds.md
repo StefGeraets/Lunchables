@@ -1,7 +1,7 @@
 ---
 title: 'Open: the rules'
 type: 'content'
-order: 20
+order: 22
 ---
 
 - Vision: 5 likelihoods. Rekognition: labels with a 0 to 100 confidence

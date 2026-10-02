@@ -1,7 +1,7 @@
 ---
 title: Knox
 type: 'content'
-order: 5
+order: 7
 ---
 
 - Beatport event images

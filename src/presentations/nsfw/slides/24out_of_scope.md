@@ -1,7 +1,7 @@
 ---
 title: Not in this design
 type: 'content'
-order: 22
+order: 24
 ---
 
 - Text moderation. Event descriptions and artist names are a different problem

@@ -1,7 +1,7 @@
 ---
 title: The options
 type: 'content'
-order: 12
+order: 14
 ---
 
 - _Keep it per service_: copy the Beatport code where we need it

@@ -28,6 +28,20 @@ export const themes = {
 		accent: 'sky-400',
 		onAccent: 'slate-950',
 		highlight: 'pink-400'
+	},
+	weez: {
+		surface: 'mist-50',
+		ink: 'black',
+		accent: 'hsl(215deg 100% 50% / 100%)',
+		onAccent: 'mist-50',
+		highlight: 'limegreen'
+	},
+	weezDark: {
+		surface: '#252426',
+		ink: 'white',
+		accent: 'hsl(215deg 100% 50% / 100%)',
+		onAccent: 'white',
+		highlight: 'limegreen'
 	}
 } satisfies Record<string, ThemeColors>;
 

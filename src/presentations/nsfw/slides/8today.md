@@ -1,7 +1,7 @@
 ---
 title: Moderation today
 type: 'content'
-order: 6
+order: 8
 ---
 
 - Lives in the _Beatport backend_ only, in EventController::isSafeImage

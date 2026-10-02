@@ -1,7 +1,7 @@
 ---
 title: 'Open: timing and failure'
 type: 'content'
-order: 19
+order: 21
 ---
 
 - S3 events arrive asynchronously, typically in seconds, sometimes longer

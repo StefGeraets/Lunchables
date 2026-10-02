@@ -1,7 +1,7 @@
 ---
 title: The new setup
 type: 'content'
-order: 17
+order: 19
 ---
 
 <p class="text-5xl">Once there's a Lambda on the bucket, more can follow:</p>

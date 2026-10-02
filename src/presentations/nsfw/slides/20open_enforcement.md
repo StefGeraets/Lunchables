@@ -1,7 +1,7 @@
 ---
 title: 'Open: who blocks?'
 type: 'content'
-order: 18
+order: 20
 ---
 
 - A result on the object doesn't stop anyone from using the image
