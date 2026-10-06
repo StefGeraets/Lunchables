@@ -20,6 +20,7 @@
 
 <div
 	bind:this={slide}
+	data-size={data.meta.size}
 	class="flex flex-col items-center justify-between w-screen flex-1 min-h-0 slide"
 >
 	{#if data.meta.type === 'content'}
@@ -32,7 +33,24 @@
 			</hgroup>
 
 			<!-- Post -->
-			<div class="prose prose-2xl max-w-none">
+			<div
+				class={[
+					'prose max-w-none prose-code:before:content-none prose-code:after:content-none',
+					data.meta.size === 'compact' ? 'prose-sm' : 'prose-2xl'
+				]}
+			>
+				<data.content />
+			</div>
+		</section>
+	{:else if data.meta.type === 'split'}
+		<section class="flex flex-col w-5/6 h-full pt-10 pb-4 mx-auto overflow-hidden">
+			<hgroup class="flex items-center w-full mb-8">
+				<h1 class="w-full italic font-black text-center text-accent text-5xl">
+					{data.meta.title}
+				</h1>
+			</hgroup>
+
+			<div class="flex-1 overflow-hidden">
 				<data.content />
 			</div>
 		</section>
