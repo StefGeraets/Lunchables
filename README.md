@@ -1,6 +1,6 @@
 # Lunchables
 
-A slide deck app for talks with live demos. Slides are Markdown files that can embed Svelte components, so a slide can show a code snippet and run that same feature right below it. The first deck is "Lunchable: Install Nothing", a 20 minute talk on native browser APIs (dialog, popover, view transitions, anchor positioning, exclusive accordions and more).
+A slide deck app for talks with live demos. Slides are Markdown files that can embed Svelte components, so a slide can show a code snippet and run that same feature right below it. The first deck is "Lunchable: Install Nothing", a 20 minute talk on native browser APIs (dialog, popover, view transitions, anchor positioning, exclusive accordions and more). Other decks cover image moderation (NSFW) and working with Claude Code (Vibe with Claude).
 
 Built with Svelte 5, SvelteKit (remote functions, prerendering), mdsvex, Shiki and Tailwind CSS 4.
 
@@ -158,7 +158,7 @@ Run `bun run new slide` (or `bun run new slide my-talk` to skip picking the deck
 | ------------ | --------------------------------------- | --------------------------------------------------------------------------- |
 | Presentation | the only deck, or a list to pick from   | Skipped when you pass the deck name                                         |
 | Position     | At the end                              | `At the end` or `Before <slide>`. Each option says how many slides it moves |
-| Slide type   | the type of the slide before it         | `content`, `demo`, `ship` or `code`                                         |
+| Slide type   | the type of the slide before it         | `content`, `demo`, `ship`, `split` or `code`                                |
 | Title        | the title of the slide before it        | Slides in one section share a title                                         |
 | Subtitle     | empty                                   | Only asked for `demo` and `ship`                                            |
 | File name    | order + subtitle (or title) in URL form | Becomes the slide's URL. Must not exist yet                                 |
@@ -168,6 +168,7 @@ The new file gets the frontmatter plus a starter body for its type:
 - `content`: two placeholder bullets
 - `demo`: a commented-out component import and an empty `html` code block
 - `ship`: a `ShipScore` with empty versions, if the deck has `components/ShipScore.svelte`. Otherwise a note on where to copy it from
+- `split`: two columns, text on the left and a commented-out component on the right
 - `code`: no body
 
 After each slide the script asks "Add another slide?", and `bun run new deck` asks the same once the deck exists.
@@ -195,7 +196,8 @@ order: 6
 | ---------- | -------- | ----------------------------------------------------------------------------------------------------------- |
 | `title`    | yes      | Slide title, also the browser tab title                                                                     |
 | `subtitle` | no       | Big accent-colored heading on `demo` and `ship` slides, shown in the slide picker                           |
-| `type`     | yes      | `content`, `demo`, `ship` or `code` (layouts below)                                                         |
+| `type`     | yes      | `content`, `demo`, `ship`, `split` or `code` (layouts below)                                                |
+| `size`     | no       | `compact` shrinks prose and lists to small text, for slides with a lot of text                              |
 | `order`    | yes      | Position in the deck. Slides are sorted by this number, not by file name, so give each slide a unique value |
 
 ### Slide types
@@ -203,6 +205,7 @@ order: 6
 - **`content`**: large italic title in the accent color with the Markdown body below it in large prose. Use it for bullet lists and text.
 - **`demo`**: small title, big subtitle, and the body inside a bordered, scrollable box. Use it for a live demo with its code.
 - **`ship`**: like `demo` without the border. Meant for the ship score component.
+- **`split`**: medium italic title in the accent color, then the body fills the rest of the screen without scrolling. Write the body as HTML with two columns, text on the left and a component (a code panel, an image) on the right.
 - **`code`**: shows only `title | code`. The Markdown body is not rendered for this type.
 
 ### Components in slides
@@ -246,12 +249,12 @@ To highlight steps in a sequence diagram, wrap them in a `rect` block, for examp
 
 [src/routes/mdsvex.svelte](src/routes/mdsvex.svelte) replaces some Markdown elements with custom components from `src/lib/components/custom/`, for every deck:
 
-| Markdown       | Renders as                                                   |
-| -------------- | ------------------------------------------------------------ |
-| `_text_`       | Non-italic text with a wavy underline in the highlight color |
-| `- item` lists | Large text (`text-5xl`) with a 🗴 marker                      |
-| `![alt](src)`  | `<img>` with `loading="lazy"`                                |
-| Code blocks    | `<pre>` at 95% width                                         |
+| Markdown       | Renders as                                                                |
+| -------------- | ------------------------------------------------------------------------- |
+| `_text_`       | Non-italic text with a wavy underline in the highlight color              |
+| `- item` lists | Large text (`text-5xl`) with a 🗴 marker, `text-sm` with `size: 'compact'` |
+| `![alt](src)`  | `<img>` with `loading="lazy"`                                             |
+| Code blocks    | `<pre>` at 95% width                                                      |
 
 ### Images
 

@@ -1,7 +1,9 @@
 export type Slide = {
 	title: string;
 	subtitle?: string;
-	type: 'content' | 'code' | 'demo' | 'ship';
+	type: 'content' | 'code' | 'demo' | 'ship' | 'split';
+	/** 'compact' shrinks prose and lists, for text-heavy slides. */
+	size?: 'compact';
 	order: number;
 	slug: string;
 };

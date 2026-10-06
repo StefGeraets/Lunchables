@@ -19,12 +19,13 @@ type SlideType = Slide['type'];
 type SlideInfo = { file: string; title: string; subtitle: string; type: SlideType; order: number };
 type Move = { slide: SlideInfo; order: number; file: string };
 
-const types: SlideType[] = ['content', 'demo', 'ship', 'code'];
+const types: SlideType[] = ['content', 'demo', 'ship', 'split', 'code'];
 
 const typeHints: Record<SlideType, string> = {
 	content: 'big title with text or bullet points',
 	demo: 'live component in a bordered box, with its code',
 	ship: 'browser support and a ship-it verdict',
+	split: 'text on the left, a component on the right',
 	code: 'title only, the Markdown body is not shown'
 };
 
@@ -116,6 +117,20 @@ const body = (type: SlideType, deckDir: string) => {
 `;
 			}
 			return '<!-- Copy ShipScore.svelte from src/presentations/install-nothing/components to use it here -->\n';
+		case 'split':
+			return `<script>
+  // import Demo from '../components/Demo.svelte'
+</script>
+
+<div class="flex gap-8 h-full text-sm">
+  <div class="flex-1 flex flex-col gap-4 pt-1">
+    <p>Your text</p>
+  </div>
+  <div class="flex-1 h-full">
+    <!-- <Demo /> -->
+  </div>
+</div>
+`;
 		case 'code':
 			return '';
 	}
