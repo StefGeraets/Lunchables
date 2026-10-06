@@ -7,7 +7,7 @@ import { createHighlighter } from 'shiki';
 
 const highlighter = await createHighlighter({
 	themes: ['github-dark'],
-	langs: ['html', 'css', 'javascript']
+	langs: ['html', 'css', 'javascript', 'go']
 });
 
 /** @type {import('mdsvex').MdsvexOptions} */
@@ -18,6 +18,11 @@ const mdsvexOptions = {
 	},
 	highlight: {
 		highlighter: async (code, lang = 'text') => {
+			// Rendered in the browser by renderDiagrams() in $lib/mermaid.ts
+			if (lang === 'mermaid') {
+				const escaped = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+				return `{@html \`${escapeSvelte(`<div class="mermaid">${escaped}</div>`)}\` }`;
+			}
 			const loaded = highlighter.getLoadedLanguages().includes(lang);
 			const html = escapeSvelte(
 				highlighter.codeToHtml(code, { lang: loaded ? lang : 'text', theme: 'github-dark' })
